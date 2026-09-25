@@ -3,16 +3,13 @@
   "version": "1.0.0",
   "description": "VIDIT UNIVERSE — Interactive Spatial Galaxy Portfolio",
   "type": "module",
-  "main": "server.js",
   "scripts": {
-    "start": "node server.js",
-    "dev": "node server.js"
+    "dev": "node server.js",
+    "start": "node server.js"
   },
   "keywords": [
     "portfolio",
-    "threejs",
     "spatial",
-    "canvas",
     "interactive"
   ],
   "author": "Vidit Kumar Singh",

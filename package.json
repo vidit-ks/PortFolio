@@ -1,0 +1,18 @@
+{
+  "name": "vidit-universe",
+  "version": "1.0.0",
+  "description": "VIDIT UNIVERSE — Interactive Spatial Galaxy Portfolio",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": [
+    "portfolio",
+    "universe",
+    "spatial"
+  ],
+  "author": "Vidit Kumar Singh",
+  "license": "MIT"
+}

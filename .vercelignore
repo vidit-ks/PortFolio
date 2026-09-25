@@ -1,5 +1,0 @@
-# Ignore local dev server on Vercel deployment
-server.js
-.env
-.env.*
-.env.example

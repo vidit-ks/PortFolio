@@ -3,6 +3,10 @@
 .env.local
 .env.*.local
 
+# Local dev server (not needed on Vercel CDN)
+server.js
+dev-server.js
+
 # Dependencies
 node_modules/
 package-lock.json

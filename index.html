@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <title>VIDIT UNIVERSE — Interactive Portfolio</title>
+  <meta name="description" content="Explore the universe of Vidit Kumar Singh: Full-Stack Developer & AI Systems Engineer. Discover projects as planets, skills as constellations, and systems in deep orbit.">
+  <meta name="keywords" content="Vidit Kumar Singh, Portfolio, Full-Stack, AI, Developer, Interactive Portfolio, Universe, ThreeJS, WebGL">
+  <meta name="theme-color" content="#030407">
+
+  <!-- Preconnect to Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Space+Grotesk:wght@300;400;500;600;700&family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="universe-body">
+
+  <!-- CUSTOM CURSOR -->
+  <div id="cursor-dot" class="cursor-dot"></div>
+  <div id="cursor-ring" class="cursor-ring"></div>
+
+  <!-- LANDING EXPERIENCE -->
+  <section id="landing-stage" class="landing-stage">
+    <!-- Landing Ambient Particles Canvas -->
+    <canvas id="landing-canvas" class="landing-canvas"></canvas>
+    
+    <div class="singularity-glow"></div>
+    <div class="landing-aurora" id="landing-aurora"></div>
+
+    <div class="landing-content">
+      <div class="singularity-wrapper">
+        <div class="singularity-orbital-ring ring-1"></div>
+        <div class="singularity-orbital-ring ring-2"></div>
+        <div class="singularity-point" id="singularity-trigger" title="Ignite Singularity"></div>
+        <div class="singularity-pulse"></div>
+      </div>
+      
+      <div class="hero-text-block">
+        <div class="landing-badge-wrapper">
+          <span class="pulse-indicator"></span>
+          <span class="landing-sys-badge">SYSTEM INITIALIZATION // SECTOR 01</span>
+        </div>
+        
+        <h1 class="landing-title">THE UNIVERSE</h1>
+        <p class="landing-subtitle">A collection of things I've built, explored, and shipped.</p>
+        
+        <div class="landing-actions">
+          <button id="btn-enter-universe" class="btn-warp">
+            <span class="btn-glow"></span>
+            <span class="btn-label">ENTER THE UNIVERSE</span>
+            <span class="btn-arrow">→</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="landing-footer-telemetry">
+        <div class="telemetry-left">
+          <span>COORDINATES: RA 04h 35m / DEC +16° 30′</span>
+          <span>SPATIAL 2.5D ENGINE // 60 FPS</span>
+        </div>
+        <div class="telemetry-right creator-stamp">
+          <span class="creator-label">// ARCHITECT & CREATOR</span>
+          <span class="creator-name">VIDIT KUMAR SINGH</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MAIN UNIVERSE CANVAS & SPATIAL ENVIRONMENT -->
+  <main id="universe-stage" class="universe-stage hidden" aria-label="Interactive Universe">
+    
+    <!-- Deep Space Multi-Layer Canvas for Starfields, Dust & Nebulae -->
+    <canvas id="space-canvas" class="space-canvas"></canvas>
+
+    <!-- Spatial Camera Viewport Layer -->
+    <div id="spatial-world" class="spatial-world">
+      
+      <!-- SVG Vector Constellation Lines & Gravitational Beams (Inside Spatial World) -->
+      <svg id="constellation-svg" class="constellation-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+      
+      <!-- CENTRAL STATION // MISSION CONTROL -->
+      <div id="central-station" class="world-node central-station" data-id="mission-control" data-type="station" style="--x: 0px; --y: 0px;">
+        <div class="station-core">
+          <div class="station-ring station-ring-1"></div>
+          <div class="station-ring station-ring-2"></div>
+          <div class="station-beacon"></div>
+          <div class="station-icon">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+              <polyline points="2 17 12 22 22 17"></polyline>
+              <polyline points="2 12 12 17 22 12"></polyline>
+            </svg>
+          </div>
+        </div>
+        <div class="station-label">
+          <span class="node-badge">CORE STATION</span>
+          <span class="node-name">MISSION CONTROL</span>
+          <span class="node-sub">Vidit Kumar Singh</span>
+        </div>
+      </div>
+
+      <!-- COMMUNICATION SATELLITE (Positioned between InsightAI and Medicura) -->
+      <div id="comm-satellite" class="world-node comm-satellite" data-id="satellite" data-type="satellite" style="--x: -180px; --y: 280px;">
+        <div class="satellite-orbit-line"></div>
+        <div class="satellite-body">
+          <div class="satellite-solar-left"></div>
+          <div class="satellite-core-mesh">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M4 11a9 9 0 0 1 9 9"></path>
+              <path d="M4 4a16 16 0 0 1 16 16"></path>
+              <circle cx="5" cy="19" r="1.5"></circle>
+            </svg>
+          </div>
+          <div class="satellite-solar-right"></div>
+          <div class="satellite-ping-wave"></div>
+        </div>
+        <div class="satellite-label">
+          <span class="node-badge">UPLINK</span>
+          <span class="node-name">COMMUNICATION SATELLITE</span>
+        </div>
+      </div>
+
+      <!-- PRIMARY PROJECT PLANETS CONTAINER -->
+      <div id="planets-container" class="planets-layer"></div>
+
+      <!-- EXPERIMENTAL SECTOR CONTAINER (Distant Stars Area) -->
+      <div id="experimental-container" class="experimental-layer">
+        <div class="sector-boundary-tag" style="--x: 520px; --y: -300px;">
+          <span class="sector-marker">// SECTOR : EXPERIMENTAL SYSTEMS</span>
+        </div>
+      </div>
+
+      <!-- CONSTELLATION NODES LAYER (Tech Stars) -->
+      <div id="constellation-nodes-layer" class="constellation-layer"></div>
+
+    </div>
+
+    <!-- FLOATING TOP HUD / TELEMETRY -->
+    <header class="top-hud">
+      <div class="hud-brand" id="hud-brand-home">
+        <span class="hud-dot"></span>
+        <span class="hud-title">VIDIT UNIVERSE</span>
+        <span class="hud-version">v2.4 [ORBITAL]</span>
+      </div>
+
+      <!-- DYNAMIC STATUS PILL (Replaces CURRENT SECTOR) -->
+      <div class="hud-status-pill" id="hud-status-pill" aria-live="polite">
+        <span class="status-pulse-dot" id="status-pulse-dot"></span>
+        <span class="status-pill-text" id="status-pill-text">SIGNAL : ONLINE</span>
+      </div>
+
+      <div class="hud-telemetry">
+        <div class="telemetry-item">
+          <span class="tele-lbl">COORD</span>
+          <span class="tele-val" id="tele-coord">X: 000 Y: 000</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="tele-lbl">GRAV</span>
+          <span class="tele-val" id="tele-grav">1.00 G</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- FLOATING BOTTOM DOCK HUD (PRIMARY CONTROLS) -->
+    <nav class="dock-hud" aria-label="Universe Navigation">
+      <div class="dock-glass">
+        
+        <!-- TRACE Mode Toggle (New Feature) -->
+        <button id="btn-trace" class="dock-btn" title="Toggle Architecture Technology Trace Mode">
+          <div class="dock-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+              <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+              <line x1="12" y1="22.08" x2="12" y2="12"></line>
+            </svg>
+          </div>
+          <span class="dock-label">TRACE <strong id="trace-status" class="status-off">OFF</strong></span>
+        </button>
+
+        <!-- Gravity Toggle -->
+        <button id="btn-gravity" class="dock-btn" title="Toggle Cursor Gravitational Distortions">
+          <div class="dock-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="9"></circle>
+              <path d="M12 3v18"></path>
+              <path d="M3 12h18"></path>
+            </svg>
+          </div>
+          <span class="dock-label">GRAVITY <strong id="gravity-status" class="status-off">OFF</strong></span>
+        </button>
+
+        <!-- Constellations Toggle -->
+        <button id="btn-constellations" class="dock-btn" title="Inspect Technology Constellations & Synapses">
+          <div class="dock-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="6" cy="6" r="2"></circle>
+              <circle cx="18" cy="8" r="2"></circle>
+              <circle cx="14" cy="18" r="2"></circle>
+              <polyline points="6 6 18 8 14 18"></polyline>
+            </svg>
+          </div>
+          <span class="dock-label">CONSTELLATIONS</span>
+        </button>
+
+        <!-- Mission Control (About) -->
+        <button id="btn-mission-control" class="dock-btn" title="Central Station & Profile">
+          <div class="dock-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+              <circle cx="12" cy="7" r="4"></circle>
+            </svg>
+          </div>
+          <span class="dock-label">MISSION CONTROL</span>
+        </button>
+
+        <!-- Communication Satellite (Contact) -->
+        <button id="btn-satellite-dock" class="dock-btn" title="Communication Satellite Uplink">
+          <div class="dock-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 2L11 13"></path>
+              <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
+            </svg>
+          </div>
+          <span class="dock-label">SATELLITE</span>
+        </button>
+
+        <div class="dock-divider"></div>
+
+        <!-- RECRUITER MODE (Priority Quick View) -->
+        <button id="btn-recruiter-mode" class="dock-btn dock-btn-highlight" title="Open 1-Minute Executive Summary">
+          <span class="btn-pulse-dot"></span>
+          <span class="dock-label font-bold">RECRUITER MODE</span>
+        </button>
+
+        <!-- Audio Synthesizer Toggle -->
+        <button id="btn-audio-toggle" class="dock-btn dock-btn-icon-only" title="Toggle Cosmic Synthesizer Ambience">
+          <svg id="icon-sound-off" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <line x1="23" y1="9" x2="17" y2="15"></line>
+            <line x1="17" y1="9" x2="23" y2="15"></line>
+          </svg>
+          <svg id="icon-sound-on" class="hidden" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+
+        <!-- Reset Center Camera -->
+        <button id="btn-recenter" class="dock-btn dock-btn-icon-only" title="Recenter Camera Orbit">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+          </svg>
+        </button>
+
+      </div>
+    </nav>
+
+    <!-- MINI RADAR HUD (Bottom Right) -->
+    <div class="mini-radar-container" id="mini-radar" title="Universe Orbital Radar">
+      <div class="radar-sweep"></div>
+      <div class="radar-blips" id="radar-blips"></div>
+      <div class="radar-scope-rings"></div>
+      <span class="radar-label">ORBITAL RADAR</span>
+    </div>
+
+    <!-- FILTER SPECTRUM PILLS (Top Center Quick Switch) -->
+    <div class="spectrum-filter-bar">
+      <button class="filter-pill active" data-filter="all">ALL WORLDS</button>
+      <button class="filter-pill" data-filter="ai">AI / NEURAL</button>
+      <button class="filter-pill" data-filter="fullstack">FULL-STACK</button>
+      <button class="filter-pill" data-filter="infra">INFRA & ROUTING</button>
+    </div>
+
+  </main>
+
+  <!-- ==================== OVERLAYS & MODALS ==================== -->
+
+  <!-- 1. PLANET ENVIRONMENT DETAIL OVERLAY (Camera Zoom-In View) -->
+  <div id="planet-modal" class="universe-overlay planet-overlay hidden">
+    <div class="overlay-backdrop" id="planet-overlay-backdrop"></div>
+    <div class="planet-modal-content">
+      
+      <!-- Top Action Bar -->
+      <div class="modal-top-bar">
+        <div class="planet-telemetry-badge">
+          <span class="status-indicator"></span>
+          <span id="modal-planet-sector">INNER CORE // WORLD 01</span>
+        </div>
+        <button id="btn-return-orbit" class="btn-return-orbit">
+          <span class="return-arrow">←</span>
+          <span>RETURN TO ORBIT</span>
+        </button>
+      </div>
+
+      <!-- Main Two-Column Holographic Layout -->
+      <div class="planet-detail-grid">
+        
+        <!-- Left: Planetary Hologram & Live Telemetry -->
+        <div class="planet-holo-column">
+          <div class="holo-planet-sphere-wrap">
+            <div id="modal-sphere-render" class="holo-planet-sphere">
+              <div class="sphere-surface"></div>
+              <div class="sphere-atmosphere"></div>
+              <div class="sphere-ring"></div>
+            </div>
+          </div>
+          
+          <div class="holo-metrics-panel">
+            <div class="metrics-title">// ORBITAL TELEMETRY & IMPACT</div>
+            <div class="metrics-list" id="modal-metrics-list"></div>
+          </div>
+        </div>
+
+        <!-- Right: Technical Specification & Actions -->
+        <div class="planet-info-column">
+          <div class="planet-category-pill" id="modal-planet-category">Product / Workflow</div>
+          <h2 class="planet-title-h1" id="modal-planet-name">RoleFlow</h2>
+          
+          <!-- 1. One-line "what it does" -->
+          <div class="spec-section">
+            <h3 class="spec-title">WHAT IT DOES</h3>
+            <p class="planet-tagline" id="modal-planet-tagline">
+              A role/workflow-oriented application with user authentication and role-based functionality.
+            </p>
+          </div>
+
+          <!-- 2. WHAT THIS DEMONSTRATES -->
+          <div class="spec-section spec-demonstrates-box">
+            <h3 class="spec-title highlight-title">WHAT THIS DEMONSTRATES</h3>
+            <p class="spec-body demonstrates-body" id="modal-planet-demonstrates">
+              My ability to implement authentication, login flows, role-based access, protected application functionality, and structure a full-stack application around different user roles.
+            </p>
+          </div>
+
+          <!-- 3. Tech stack -->
+          <div class="spec-section">
+            <h3 class="spec-title">TECH STACK</h3>
+            <div class="stack-badge-cloud" id="modal-planet-stack"></div>
+          </div>
+
+          <!-- 4. CTAs: Live Demo & GitHub -->
+          <div class="planet-action-row" id="modal-action-row">
+            <a id="modal-link-live" href="#" target="_blank" rel="noopener noreferrer" class="btn-primary-action">
+              <span>LIVE DEMO</span>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+                <polyline points="15 3 21 3 21 9"></polyline>
+                <line x1="21" y1="3" x2="14" y2="10"></line>
+              </svg>
+            </a>
+            <a id="modal-link-github" href="#" target="_blank" rel="noopener noreferrer" class="btn-secondary-action">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+              </svg>
+              <span>GITHUB</span>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 2. CONSTELLATIONS EXPLORATION MODAL -->
+  <div id="constellations-modal" class="universe-overlay hidden">
+    <div class="overlay-backdrop" id="constellations-backdrop"></div>
+    <div class="constellations-sheet">
+      <div class="sheet-header">
+        <div>
+          <span class="sheet-badge">// SYNAPTIC TOPOLOGY</span>
+          <h2 class="sheet-title">TECHNOLOGY CONSTELLATIONS</h2>
+          <p class="sheet-desc">Select any technology node to illuminate gravitational connections across projects.</p>
+        </div>
+        <button class="btn-close-modal" id="btn-close-constellations">✕</button>
+      </div>
+
+      <!-- Quick Tech Stars Grid -->
+      <div class="tech-constellation-grid" id="tech-constellation-grid"></div>
+
+      <!-- Active Connection Output -->
+      <div class="constellation-active-details" id="constellation-active-details">
+        <div class="active-tech-title" id="active-tech-name">Select a node above</div>
+        <div class="active-connected-projects" id="active-connected-projects"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. MISSION CONTROL (ABOUT ME) MODAL -->
+  <div id="mission-control-modal" class="universe-overlay hidden">
+    <div class="overlay-backdrop" id="mission-control-backdrop"></div>
+    <div class="mission-control-sheet">
+      <div class="sheet-header">
+        <div>
+          <span class="sheet-badge">// ORBITAL COMMAND</span>
+          <h2 class="sheet-title">MISSION CONTROL</h2>
+          <p class="sheet-desc">Central hub of engineering philosophy, credentials, and telemetry.</p>
+        </div>
+        <button class="btn-close-modal" id="btn-close-mission-control">✕</button>
+      </div>
+
+      <div class="mission-control-body">
+        <div class="bio-intro-box">
+          <div class="bio-avatar-ring">
+            <img src="vidit.jpg" alt="Vidit Kumar Singh" class="bio-avatar-img">
+          </div>
+          <div class="bio-text">
+            <h3 class="bio-name">VIDIT KUMAR SINGH</h3>
+            <p class="bio-role">Computer Science Undergraduate & Full-Stack Systems Engineer</p>
+            <p class="bio-paragraph">
+              Building software that marries solid engineering principles with modern artificial intelligence. Focused on high-reliability distributed services, reactive UI paradigms, and production-grade applied machine learning models.
+            </p>
+          </div>
+        </div>
+
+        <!-- Telemetry Stats Grid -->
+        <div class="mission-stats-grid">
+          <div class="stat-card">
+            <span class="stat-label">PRIMARY CORE</span>
+            <span class="stat-val">Full-Stack & Applied AI</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">LANGUAGES</span>
+            <span class="stat-val">Java, Python, TypeScript, SQL</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">SYSTEM ARCHITECTURE</span>
+            <span class="stat-val">Distributed, Event-Driven, Microservices</span>
+          </div>
+          <div class="stat-card">
+            <span class="stat-label">CURRENT STATUS</span>
+            <span class="stat-val stat-nominal">● READY FOR DEPLOYMENT</span>
+          </div>
+        </div>
+
+        <!-- Fast Link Station with Exact URLs -->
+        <div class="mission-links-row">
+          <a href="https://github.com/vidit-ks/" target="_blank" rel="noopener noreferrer" class="station-link-pill">
+            <span>GITHUB</span>
+            <span class="link-ext">↗</span>
+          </a>
+          <a href="https://www.linkedin.com/in/vidit-ks/" target="_blank" rel="noopener noreferrer" class="station-link-pill">
+            <span>LINKEDIN</span>
+            <span class="link-ext">↗</span>
+          </a>
+          <a href="https://leetcode.com/u/vidit_03/" target="_blank" rel="noopener noreferrer" class="station-link-pill">
+            <span>LEETCODE</span>
+            <span class="link-ext">↗</span>
+          </a>
+          <a href="https://www.instagram.com/_.vidit_/" target="_blank" rel="noopener noreferrer" class="station-link-pill">
+            <span>INSTAGRAM</span>
+            <span class="link-ext">↗</span>
+          </a>
+          <button id="btn-open-resume-action" class="station-link-pill pill-primary">
+            <span>VIEW RESUME</span>
+            <span class="link-ext">↓</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. RECRUITER MODE (1-MINUTE EXECUTIVE BRIEFING) -->
+  <div id="recruiter-modal" class="universe-overlay hidden">
+    <div class="overlay-backdrop" id="recruiter-backdrop"></div>
+    <div class="recruiter-briefing-sheet">
+      
+      <div class="briefing-body">
+        <!-- Candidate Overview (Starts directly with name) -->
+        <div class="briefing-header-block">
+          <div>
+            <h2 class="briefing-candidate-name">Vidit Kumar Singh</h2>
+            <p class="briefing-candidate-sub">Computer Science undergraduate and full-stack developer building products that combine software engineering with AI.</p>
+          </div>
+          <div class="briefing-header-right">
+            <div class="briefing-quick-actions">
+              <a href="mailto:kumarvidit69@gmail.com" class="btn-briefing-action btn-highlight">
+                <span>GET IN TOUCH</span>
+              </a>
+              <button id="btn-recruiter-resume" class="btn-briefing-action">
+                <span>VIEW RESUME</span>
+              </button>
+            </div>
+            <button class="btn-close-modal" id="btn-close-recruiter" title="Close">✕</button>
+          </div>
+        </div>
+
+        <div class="briefing-divider"></div>
+
+        <!-- Skills Matrix -->
+        <div class="briefing-section">
+          <h4 class="briefing-section-title">CORE COMPETENCIES & STACK</h4>
+          <div class="briefing-skills-grid">
+            <div class="skill-category-card">
+              <span class="cat-label">LANGUAGES</span>
+              <span class="cat-items">Java, Python, TypeScript, JavaScript, SQL, C++</span>
+            </div>
+            <div class="skill-category-card">
+              <span class="cat-label">FRONTEND</span>
+              <span class="cat-items">React, Next.js, Modern CSS, Canvas/WebGL, UI Architecture</span>
+            </div>
+            <div class="skill-category-card">
+              <span class="cat-label">BACKEND & DATA</span>
+              <span class="cat-items">Node.js, Express, FastAPI, PostgreSQL, Supabase, Redis</span>
+            </div>
+            <div class="skill-category-card">
+              <span class="cat-label">AI / ML & INFRA</span>
+              <span class="cat-items">PyTorch, TensorFlow, LLMs, Docker, AWS, Git, CI/CD</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary Projects List -->
+        <div class="briefing-section">
+          <h4 class="briefing-section-title">FEATURED PROJECTS</h4>
+          <div class="briefing-projects-list" id="recruiter-projects-list"></div>
+        </div>
+
+        <!-- Footer Links -->
+        <div class="briefing-footer-row">
+          <div class="footer-links-group">
+            <a href="https://github.com/vidit-ks/" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+            <a href="https://www.linkedin.com/in/vidit-ks/" target="_blank" rel="noopener noreferrer">LinkedIn ↗</a>
+            <a href="https://leetcode.com/u/vidit_03/" target="_blank" rel="noopener noreferrer">LeetCode ↗</a>
+            <a href="https://www.instagram.com/_.vidit_/" target="_blank" rel="noopener noreferrer">Instagram ↗</a>
+          </div>
+          <div class="status-indicator-tag">
+            <span class="status-dot-green"></span>
+            <span>Actively interviewing for Software Engineering & AI roles</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. COMMUNICATION SATELLITE (CONTACT) MODAL -->
+  <div id="satellite-modal" class="universe-overlay hidden">
+    <div class="overlay-backdrop" id="satellite-backdrop"></div>
+    <div class="satellite-sheet">
+      <div class="sheet-header">
+        <div>
+          <span class="sheet-badge">// SECURE SATELLITE UPLINK</span>
+          <h2 class="sheet-title">COMMUNICATION SATELLITE</h2>
+          <p class="sheet-desc">Let's connect, collaborate, or talk about something you're building.</p>
+        </div>
+        <button class="btn-close-modal" id="btn-close-satellite" title="Close">✕</button>
+      </div>
+
+      <div class="satellite-split-layout">
+        
+        <!-- LEFT COLUMN: Contact Profiles & Direct Email -->
+        <div class="satellite-left-col">
+          <div class="satellite-intro-box">
+            <p class="satellite-intro-text">
+              Whether you have an open engineering role, a high-impact project idea, or just want to chat about AI systems and software architecture—my frequencies are always open.
+            </p>
+          </div>
+
+          <!-- Direct Real Email Card -->
+          <a href="mailto:kumarvidit69@gmail.com" class="direct-email-card" title="Click to open default email client">
+            <div class="channel-icon email-icon-badge">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+            </div>
+            <div class="channel-info">
+              <span class="channel-name">DIRECT EMAIL</span>
+              <span class="channel-value email-value-highlight">kumarvidit69@gmail.com</span>
+            </div>
+            <span class="channel-arrow">↗</span>
+          </a>
+
+          <!-- 4 Contact Cards (GitHub, LinkedIn, LeetCode, Instagram) -->
+          <div class="comm-cards-grid">
+            
+            <!-- GitHub -->
+            <a href="https://github.com/vidit-ks/" target="_blank" rel="noopener noreferrer" class="comm-channel-card">
+              <div class="channel-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+                </svg>
+              </div>
+              <div class="channel-info">
+                <span class="channel-name">GITHUB</span>
+                <span class="channel-value">github.com/vidit-ks</span>
+              </div>
+              <span class="channel-arrow">↗</span>
+            </a>
+
+            <!-- LinkedIn -->
+            <a href="https://www.linkedin.com/in/vidit-ks/" target="_blank" rel="noopener noreferrer" class="comm-channel-card">
+              <div class="channel-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+                  <rect x="2" y="9" width="4" height="12"></rect>
+                  <circle cx="4" cy="4" r="2"></circle>
+                </svg>
+              </div>
+              <div class="channel-info">
+                <span class="channel-name">LINKEDIN</span>
+                <span class="channel-value">linkedin.com/in/vidit-ks</span>
+              </div>
+              <span class="channel-arrow">↗</span>
+            </a>
+
+            <!-- LeetCode -->
+            <a href="https://leetcode.com/u/vidit_03/" target="_blank" rel="noopener noreferrer" class="comm-channel-card">
+              <div class="channel-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M13.483 0a1.374 1.374 0 0 0-.961.438L7.116 6.226l-3.854 4.126a5.266 5.266 0 0 0-1.209 2.104 5.35 5.35 0 0 0-.125.513 5.527 5.527 0 0 0 .062 2.362 5.83 5.83 0 0 0 .349 1.017 5.938 5.938 0 0 0 1.271 1.818l4.277 4.193.039.038c2.248 2.165 5.852 2.133 8.063-.074l2.396-2.392c.54-.54.54-1.414.003-1.955a1.378 1.378 0 0 0-1.951-.003l-2.396 2.392a3.021 3.021 0 0 1-4.205.038l-.02-.019-4.276-4.193c-.652-.64-.972-1.469-.948-2.263a2.68 2.68 0 0 1 .066-.523 2.545 2.545 0 0 1 .619-1.164L9.13 8.114c1.058-1.134 3.204-1.27 4.43-.278l3.501 2.831c.593.48 1.461.387 1.94-.207a1.384 1.384 0 0 0-.207-1.943l-3.5-2.831c-.8-.647-1.766-1.045-2.774-1.202l2.015-2.158A1.384 1.384 0 0 0 13.483 0zm-2.866 12.815a1.38 1.38 0 0 0-1.38 1.382 1.38 1.38 0 0 0 1.38 1.382H20.79a1.38 1.38 0 0 0 1.38-1.382 1.38 1.38 0 0 0-1.38-1.382z"/>
+                </svg>
+              </div>
+              <div class="channel-info">
+                <span class="channel-name">LEETCODE</span>
+                <span class="channel-value">leetcode.com/u/vidit_03</span>
+              </div>
+              <span class="channel-arrow">↗</span>
+            </a>
+
+            <!-- Instagram -->
+            <a href="https://www.instagram.com/_.vidit_/" target="_blank" rel="noopener noreferrer" class="comm-channel-card">
+              <div class="channel-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+                </svg>
+              </div>
+              <div class="channel-info">
+                <span class="channel-name">INSTAGRAM</span>
+                <span class="channel-value">instagram.com/_.vidit_</span>
+              </div>
+              <span class="channel-arrow">↗</span>
+            </a>
+
+          </div>
+
+          <!-- Subtle Uplink Status Visual -->
+          <div class="satellite-signal-footer">
+            <span class="signal-radar-dot"></span>
+            <span>UPLINK: ACTIVE // DIRECT GATEWAY</span>
+          </div>
+        </div>
+
+        <!-- RIGHT COLUMN: Clean Contact Form -->
+        <div class="satellite-right-col">
+          <div class="satellite-form-card">
+            <div class="form-title-block">
+              <span class="form-badge">// SEND A MESSAGE</span>
+              <p class="form-sub-text">Have an idea, opportunity, or just want to connect?</p>
+            </div>
+
+            <form class="satellite-message-form" id="comm-form">
+              <div class="form-group">
+                <label class="form-label" for="comm-sender">Name</label>
+                <input type="text" id="comm-sender" placeholder="Your name" required class="form-input">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="comm-email">Email</label>
+                <input type="email" id="comm-email" placeholder="you@example.com" required class="form-input">
+              </div>
+
+              <div class="form-group">
+                <label class="form-label" for="comm-msg">Message</label>
+                <textarea id="comm-msg" rows="5" placeholder="Tell me what's on your mind..." required class="form-input form-textarea"></textarea>
+              </div>
+
+              <button type="submit" id="btn-submit-comm" class="btn-primary-action btn-send-comm">
+                <span id="btn-submit-text">SEND MESSAGE</span>
+                <span id="btn-submit-icon" class="btn-arrow">→</span>
+              </button>
+
+              <!-- Dynamic Status Messages -->
+              <div id="comm-status-box" class="comm-status-box hidden" role="status" aria-live="polite">
+                <div class="status-msg-title" id="comm-status-title"></div>
+                <div class="status-msg-desc" id="comm-status-desc"></div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. RESUME VIEWER MODAL -->
+  <div id="resume-modal" class="universe-overlay hidden">
+    <div class="overlay-backdrop" id="resume-backdrop"></div>
+    <div class="resume-sheet">
+      <div class="sheet-header">
+        <div>
+          <span class="sheet-badge">// CREDENTIALS PACKET</span>
+          <h2 class="sheet-title">CURRICULUM VITAE // RESUME</h2>
+          <p class="sheet-desc">Vidit Kumar Singh — Computer Science & Software Engineering</p>
+        </div>
+        <div class="resume-header-actions">
+          <button id="btn-download-resume-file" class="btn-secondary-action">
+            <span>DOWNLOAD PDF</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7 10 12 15 17 10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+          </button>
+          <button class="btn-close-modal" id="btn-close-resume">✕</button>
+        </div>
+      </div>
+
+      <div class="resume-document-content">
+        <div class="resume-paper">
+          <header class="resume-doc-header">
+            <h1 class="resume-doc-name">VIDIT KUMAR SINGH</h1>
+            <p class="resume-doc-tagline">Computer Science Undergraduate | Full-Stack & Applied AI Engineer</p>
+            <div class="resume-doc-contact">
+              <span>vidit@universe.dev</span> •
+              <span>github.com</span> •
+              <span>linkedin.com</span> •
+              <span>leetcode.com</span>
+            </div>
+          </header>
+
+          <section class="resume-doc-section">
+            <h3 class="resume-section-heading">EDUCATION</h3>
+            <div class="resume-item">
+              <div class="item-head">
+                <span class="item-title">Bachelor of Technology in Computer Science & Engineering</span>
+                <span class="item-date">2023 — Present</span>
+              </div>
+              <p class="item-desc">Relevant Coursework: Data Structures & Algorithms, Distributed Systems, Database Management Systems, Operating Systems, Machine Learning, Computer Networks.</p>
+            </div>
+          </section>
+
+          <section class="resume-doc-section">
+            <h3 class="resume-section-heading">TECHNICAL SKILLS</h3>
+            <p class="resume-skill-line"><strong>Languages:</strong> Java, Python, TypeScript, JavaScript, SQL, C++</p>
+            <p class="resume-skill-line"><strong>Frameworks & Libraries:</strong> React, Next.js, Node.js, Express, FastAPI, PyTorch, TensorFlow, TailwindCSS</p>
+            <p class="resume-skill-line"><strong>Databases & Cloud:</strong> PostgreSQL, Supabase, Redis, Docker, AWS (EC2, S3), Git, CI/CD</p>
+          </section>
+
+          <section class="resume-doc-section">
+            <h3 class="resume-section-heading">PRIMARY ENGINEERING PROJECTS</h3>
+            
+            <div class="resume-item">
+              <div class="item-head">
+                <span class="item-title">RoleFlow — Candidate Pipeline Lifecycle Engine</span>
+                <span class="item-date">React, TypeScript, Node.js, Supabase</span>
+              </div>
+              <ul class="item-bullets">
+                <li>Engineered high-concurrency recruitment stage-gate system with real-time scoring and collaborative evaluation.</li>
+                <li>Built event-driven webhook pipeline resulting in 3.4x faster candidate processing workflows.</li>
+              </ul>
+            </div>
+
+            <div class="resume-item">
+              <div class="item-head">
+                <span class="item-title">DeployHub — Autonomous CI/CD Container Delivery Platform</span>
+                <span class="item-date">Node.js, Docker, AWS, Express, Supabase</span>
+              </div>
+              <ul class="item-bullets">
+                <li>Created zero-downtime blue/green proxy routing platform with instantaneous health rollbacks.</li>
+                <li>Automated GitHub webhook build pipelines with container sandbox isolation and live telemetry streaming.</li>
+              </ul>
+            </div>
+
+            <div class="resume-item">
+              <div class="item-head">
+                <span class="item-title">InsightAI — Enterprise Multimodal Intelligence Engine</span>
+                <span class="item-date">Python, PyTorch, LLMs, FastAPI, Docker</span>
+              </div>
+              <ul class="item-bullets">
+                <li>Architected hybrid dense-sparse vector search engine achieving 18ms p95 retrieval latency across unstructured corporate archives.</li>
+                <li>Implemented autonomous multi-agent synthesis pipeline with verified citation attribution.</li>
+              </ul>
+            </div>
+
+            <div class="resume-item">
+              <div class="item-head">
+                <span class="item-title">RouteWise — Dynamic Multi-Constraint Fleet Routing Optimizer</span>
+                <span class="item-date">Java, Python, SQL, Docker</span>
+              </div>
+              <ul class="item-bullets">
+                <li>Implemented hybrid A* and Genetic TSP/VRP algorithms solving complex multi-vehicle routes in under 45ms.</li>
+              </ul>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script type="module" src="main.js"></script>
+</body>
+</html>

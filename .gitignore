@@ -3,9 +3,10 @@
 .env.local
 .env.*.local
 
-# Local dev server (not needed on Vercel CDN)
+# Local dev server & configs (pure static CDN on Vercel)
 server.js
 dev-server.js
+package.json
 
 # Dependencies
 node_modules/

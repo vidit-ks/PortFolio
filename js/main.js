@@ -1071,30 +1071,73 @@ class UniverseEngine {
       window.print();
     });
 
-    // Satellite Transmission Form Handler (Real Backend API & Resend Integration)
+    // Satellite Transmission Form Handler (Web3Forms Direct Client-Side API)
     const commForm = document.getElementById('comm-form');
+    const inputSender = document.getElementById('comm-sender');
+    const inputEmail = document.getElementById('comm-email');
+    const inputMsg = document.getElementById('comm-msg');
+    const errSender = document.getElementById('err-comm-sender');
+    const errEmail = document.getElementById('err-comm-email');
+    const errMsg = document.getElementById('err-comm-msg');
     const btnSubmitComm = document.getElementById('btn-submit-comm');
     const btnSubmitText = document.getElementById('btn-submit-text');
-    const btnSubmitIcon = document.getElementById('btn-submit-icon');
     const statusBox = document.getElementById('comm-status-box');
     const statusTitle = document.getElementById('comm-status-title');
     const statusDesc = document.getElementById('comm-status-desc');
 
+    const clearValidation = () => {
+      [inputSender, inputEmail, inputMsg].forEach(el => el?.classList.remove('input-invalid'));
+      [errSender, errEmail, errMsg].forEach(el => el?.classList.add('hidden'));
+    };
+
+    [inputSender, inputEmail, inputMsg].forEach(el => {
+      el?.addEventListener('input', () => {
+        el.classList.remove('input-invalid');
+        if (el === inputSender) errSender?.classList.add('hidden');
+        if (el === inputEmail) errEmail?.classList.add('hidden');
+        if (el === inputMsg) errMsg?.classList.add('hidden');
+      });
+    });
+
     if (commForm) {
       commForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+        clearValidation();
         
-        const name = document.getElementById('comm-sender')?.value.trim();
-        const email = document.getElementById('comm-email')?.value.trim();
-        const message = document.getElementById('comm-msg')?.value.trim();
+        const name = inputSender?.value.trim() || '';
+        const email = inputEmail?.value.trim() || '';
+        const message = inputMsg?.value.trim() || '';
 
-        if (!name || !email || !message) return;
+        let isValid = true;
+
+        if (!name) {
+          inputSender?.classList.add('input-invalid');
+          errSender?.classList.remove('hidden');
+          isValid = false;
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+          inputEmail?.classList.add('input-invalid');
+          errEmail?.classList.remove('hidden');
+          isValid = false;
+        }
+
+        if (!message) {
+          inputMsg?.classList.add('input-invalid');
+          errMsg?.classList.remove('hidden');
+          isValid = false;
+        }
+
+        if (!isValid) {
+          sound.playChime(220, 'sawtooth', 0.25);
+          return;
+        }
 
         // Enter Transmitting State
         sound.playSelect();
         if (btnSubmitComm) btnSubmitComm.disabled = true;
         if (btnSubmitText) btnSubmitText.textContent = 'TRANSMITTING...';
-        if (btnSubmitIcon) btnSubmitIcon.textContent = '⏳';
 
         if (statusBox) {
           statusBox.className = 'comm-status-box status-transmitting';
@@ -1104,10 +1147,23 @@ class UniverseEngine {
         }
 
         try {
-          const response = await fetch('/api/contact', {
+          const payload = {
+            access_key: 'YOUR_WEB3FORMS_ACCESS_KEY',
+            name: name,
+            email: email,
+            replyto: email,
+            subject: 'New message from VIDIT UNIVERSE',
+            from_name: 'VIDIT UNIVERSE',
+            message: message
+          };
+
+          const response = await fetch('https://api.web3forms.com/submit', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ name, email, message })
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json'
+            },
+            body: JSON.stringify(payload)
           });
 
           const result = await response.json();
@@ -1116,6 +1172,7 @@ class UniverseEngine {
             // Success State
             sound.playChime(640, 'sine', 0.5);
             commForm.reset();
+            clearValidation();
 
             if (statusBox) {
               statusBox.className = 'comm-status-box status-success';
@@ -1123,39 +1180,35 @@ class UniverseEngine {
               if (statusDesc) statusDesc.textContent = 'Your message has reached Mission Control.';
             }
 
-            if (btnSubmitText) btnSubmitText.textContent = 'MESSAGE SENT';
-            if (btnSubmitIcon) btnSubmitIcon.textContent = '✓';
+            if (btnSubmitText) btnSubmitText.textContent = 'TRANSMISSION RECEIVED ✓';
 
             setTimeout(() => {
               if (btnSubmitComm) btnSubmitComm.disabled = false;
-              if (btnSubmitText) btnSubmitText.textContent = 'SEND MESSAGE';
-              if (btnSubmitIcon) btnSubmitIcon.textContent = '→';
-            }, 5000);
+              if (btnSubmitText) btnSubmitText.textContent = 'TRANSMIT MESSAGE →';
+            }, 4500);
           } else {
-            // Failure State (Honest feedback, never fake success)
+            // Failure State (Keep entered form data so visitor can retry)
             sound.playChime(220, 'sawtooth', 0.4);
             if (statusBox) {
               statusBox.className = 'comm-status-box status-error';
               if (statusTitle) statusTitle.textContent = 'TRANSMISSION FAILED';
-              if (statusDesc) statusDesc.textContent = result.error || 'Something went wrong. Please try again or contact me directly.';
+              if (statusDesc) statusDesc.textContent = 'Something went wrong. Please try again.';
             }
 
             if (btnSubmitComm) btnSubmitComm.disabled = false;
-            if (btnSubmitText) btnSubmitText.textContent = 'RETRY TRANSMISSION';
-            if (btnSubmitIcon) btnSubmitIcon.textContent = '↺';
+            if (btnSubmitText) btnSubmitText.textContent = 'TRANSMIT MESSAGE →';
           }
         } catch (err) {
-          // Network Error State
+          // Network Error State (Keep entered form data so visitor can retry)
           sound.playChime(220, 'sawtooth', 0.4);
           if (statusBox) {
             statusBox.className = 'comm-status-box status-error';
             if (statusTitle) statusTitle.textContent = 'TRANSMISSION FAILED';
-            if (statusDesc) statusDesc.textContent = 'Network or server connection failed. Please try again or email kumarvidit69@gmail.com directly.';
+            if (statusDesc) statusDesc.textContent = 'Something went wrong. Please try again.';
           }
 
           if (btnSubmitComm) btnSubmitComm.disabled = false;
-          if (btnSubmitText) btnSubmitText.textContent = 'RETRY TRANSMISSION';
-          if (btnSubmitIcon) btnSubmitIcon.textContent = '↺';
+          if (btnSubmitText) btnSubmitText.textContent = 'TRANSMIT MESSAGE →';
         }
       });
     }

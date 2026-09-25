@@ -656,25 +656,27 @@
               <p class="form-sub-text">Have an idea, opportunity, or just want to connect?</p>
             </div>
 
-            <form class="satellite-message-form" id="comm-form">
+            <form class="satellite-message-form" id="comm-form" novalidate>
               <div class="form-group">
                 <label class="form-label" for="comm-sender">Name</label>
                 <input type="text" id="comm-sender" placeholder="Your name" required class="form-input">
+                <span class="field-error-msg hidden" id="err-comm-sender">Name is required</span>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="comm-email">Email</label>
                 <input type="email" id="comm-email" placeholder="you@example.com" required class="form-input">
+                <span class="field-error-msg hidden" id="err-comm-email">Please enter a valid email address</span>
               </div>
 
               <div class="form-group">
                 <label class="form-label" for="comm-msg">Message</label>
                 <textarea id="comm-msg" rows="5" placeholder="Tell me what's on your mind..." required class="form-input form-textarea"></textarea>
+                <span class="field-error-msg hidden" id="err-comm-msg">Message cannot be empty</span>
               </div>
 
               <button type="submit" id="btn-submit-comm" class="btn-primary-action btn-send-comm">
-                <span id="btn-submit-text">SEND MESSAGE</span>
-                <span id="btn-submit-icon" class="btn-arrow">→</span>
+                <span id="btn-submit-text">TRANSMIT MESSAGE →</span>
               </button>
 
               <!-- Dynamic Status Messages -->
@@ -796,6 +798,6 @@
   </div>
 
   <!-- Scripts -->
-  <script type="module" src="js/main.js"></script>
+  <script type="module" src="js/main.js?v=2.0.1"></script>
 </body>
 </html>

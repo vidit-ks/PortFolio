@@ -3606,6 +3606,20 @@ html, body {
     height: 54px;
   }
 
+  .landing-overlay {
+    padding: calc(1.2rem + var(--sat)) 1.25rem calc(1rem + var(--sab)) 1.25rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100dvh;
+    box-sizing: border-box;
+  }
+
+  .landing-content {
+    margin: auto 0;
+    padding: 0.5rem 0;
+  }
+
   .landing-badge-wrapper {
     margin-bottom: 0.75rem;
     padding: 0.25rem 0.75rem;
@@ -3636,12 +3650,15 @@ html, body {
   }
 
   .landing-footer-telemetry {
-    position: absolute;
-    bottom: calc(0.75rem + var(--sab));
-    left: 0;
-    right: 0;
-    padding: 0 1rem;
+    position: relative;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    padding: 0.75rem 1rem 0 1rem;
+    margin-top: 1.25rem;
     font-size: 0.62rem;
+    display: flex;
+    justify-content: center;
   }
 
   .telemetry-left {
@@ -3652,6 +3669,27 @@ html, body {
     width: 100%;
     text-align: center;
     align-items: center;
+    gap: 0.2rem;
+  }
+
+  .constellation-node {
+    z-index: 12;
+    opacity: 0.75;
+  }
+
+  .constellation-node.highlighted,
+  .constellation-node:active {
+    opacity: 1;
+    z-index: 15;
+  }
+
+  .comm-satellite {
+    z-index: 10;
+  }
+
+  .comm-satellite .satellite-label .node-name {
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
   }
 
   /* Universe Top HUD */

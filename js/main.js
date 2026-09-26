@@ -181,8 +181,8 @@ class UniverseEngine {
     // Sync Communication Satellite position
     const commSat = document.getElementById('comm-satellite');
     if (commSat) {
-      commSat.style.setProperty('--x', isMob ? '95px' : '-180px');
-      commSat.style.setProperty('--y', isMob ? '70px' : '280px');
+      commSat.style.setProperty('--x', isMob ? '105px' : '-180px');
+      commSat.style.setProperty('--y', isMob ? '65px' : '280px');
     }
 
     // Sync Experimental sector boundary tag
@@ -191,6 +191,44 @@ class UniverseEngine {
       expTag.style.setProperty('--x', isMob ? '0px' : '520px');
       expTag.style.setProperty('--y', isMob ? '430px' : '-300px');
     }
+  }
+
+  getCameraBounds() {
+    const isMob = this.isMobile();
+    const allBodies = [...UNIVERSE_DATA.planets, ...UNIVERSE_DATA.experimental];
+    
+    let minY = Infinity, maxY = -Infinity, minX = Infinity, maxX = -Infinity;
+    
+    allBodies.forEach(b => {
+      const coords = (isMob && b.mobileCoords) ? b.mobileCoords : b.coords;
+      const r = (isMob && b.mobileRadius) ? b.mobileRadius : b.radius;
+      if (coords.x - r < minX) minX = coords.x - r;
+      if (coords.x + r > maxX) maxX = coords.x + r;
+      if (coords.y - r < minY) minY = coords.y - r;
+      if (coords.y + r > maxY) maxY = coords.y + r;
+    });
+
+    minX = Math.min(minX, -60);
+    maxX = Math.max(maxX, 120);
+    minY = Math.min(minY, -60);
+    maxY = Math.max(maxY, 60);
+
+    // Padding buffer (comfortably bounds exploration to outermost planets + 3 scrolls)
+    const paddingX = isMob ? 180 : 380;
+    const paddingY = isMob ? 160 : 320;
+
+    return {
+      minTargetX: -(maxX + paddingX),
+      maxTargetX: -(minX - paddingX),
+      minTargetY: -(maxY + paddingY),
+      maxTargetY: -(minY - paddingY)
+    };
+  }
+
+  clampCamera() {
+    const bounds = this.getCameraBounds();
+    this.camera.targetX = Math.max(bounds.minTargetX, Math.min(bounds.maxTargetX, this.camera.targetX));
+    this.camera.targetY = Math.max(bounds.minTargetY, Math.min(bounds.maxTargetY, this.camera.targetY));
   }
 
   generateStarfield() {
@@ -816,6 +854,7 @@ class UniverseEngine {
       if (this.mouse.isDown) {
         this.camera.targetX = e.clientX - this.mouse.dragStartX;
         this.camera.targetY = e.clientY - this.mouse.dragStartY;
+        this.clampCamera();
       }
     });
 
@@ -850,6 +889,7 @@ class UniverseEngine {
         }
         this.camera.targetX = e.touches[0].clientX - this.mouse.dragStartX;
         this.camera.targetY = e.touches[0].clientY - this.mouse.dragStartY;
+        this.clampCamera();
       }
     }, { passive: true });
 
@@ -1616,7 +1656,8 @@ class UniverseEngine {
       this.cursorRing.style.transform = `translate3d(calc(${this.cursorRingPos.x}px - 50%), calc(${this.cursorRingPos.y}px - 50%), 0)`;
     }
 
-    // Camera Smooth Lerp
+    // Camera Smooth Lerp with Boundary Clamping
+    this.clampCamera();
     this.camera.x += (this.camera.targetX - this.camera.x) * 0.08;
     this.camera.y += (this.camera.targetY - this.camera.y) * 0.08;
     this.camera.scale += (this.camera.targetScale - this.camera.scale) * 0.08;

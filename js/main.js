@@ -31,6 +31,7 @@ class UniverseEngine {
     this.statusPill = document.getElementById('hud-status-pill');
     this.statusTextEl = document.getElementById('status-pill-text');
     this.statusDotEl = document.getElementById('status-pulse-dot');
+    this.mobileTraceGuide = document.getElementById('mobile-trace-guide');
 
     // Physics & Camera
     this.camera = {
@@ -66,6 +67,10 @@ class UniverseEngine {
     this.cursorRingPos = { x: this.width / 2, y: this.height / 2 };
 
     this.init();
+  }
+
+  isMobile() {
+    return window.innerWidth < 768;
   }
 
   // Dynamic Status Pill Method
@@ -134,18 +139,70 @@ class UniverseEngine {
       this.landingCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
     }
 
+    this.syncMobileCoordinates();
     this.generateStarfield();
+  }
+
+  syncMobileCoordinates() {
+    const isMob = this.isMobile();
+
+    // Sync planets base coordinates
+    this.planets.forEach(p => {
+      const coords = (isMob && p.data.mobileCoords) ? p.data.mobileCoords : p.data.coords;
+      const radius = (isMob && p.data.mobileRadius) ? p.data.mobileRadius : p.data.radius;
+      p.baseX = coords.x;
+      p.baseY = coords.y;
+      p.radius = radius;
+      p.el.style.setProperty('--x', `${p.x}px`);
+      p.el.style.setProperty('--y', `${p.y}px`);
+      p.el.style.setProperty('--size', `${radius * 2}px`);
+    });
+
+    // Sync experimental base coordinates
+    this.experimental.forEach(exp => {
+      const coords = (isMob && exp.data.mobileCoords) ? exp.data.mobileCoords : exp.data.coords;
+      const radius = (isMob && exp.data.mobileRadius) ? exp.data.mobileRadius : exp.data.radius;
+      exp.baseX = coords.x;
+      exp.baseY = coords.y;
+      exp.radius = radius;
+      exp.el.style.setProperty('--x', `${exp.x}px`);
+      exp.el.style.setProperty('--y', `${exp.y}px`);
+      exp.el.style.setProperty('--size', `${radius * 2}px`);
+    });
+
+    // Sync constellation nodes coordinates
+    this.constellations.forEach(c => {
+      c.x = (isMob && c.node.mobileX !== undefined) ? c.node.mobileX : c.node.x;
+      c.y = (isMob && c.node.mobileY !== undefined) ? c.node.mobileY : c.node.y;
+      c.el.style.setProperty('--x', `${c.x}px`);
+      c.el.style.setProperty('--y', `${c.y}px`);
+    });
+
+    // Sync Communication Satellite position
+    const commSat = document.getElementById('comm-satellite');
+    if (commSat) {
+      commSat.style.setProperty('--x', isMob ? '95px' : '-180px');
+      commSat.style.setProperty('--y', isMob ? '70px' : '280px');
+    }
+
+    // Sync Experimental sector boundary tag
+    const expTag = document.querySelector('.sector-boundary-tag');
+    if (expTag) {
+      expTag.style.setProperty('--x', isMob ? '0px' : '520px');
+      expTag.style.setProperty('--y', isMob ? '430px' : '-300px');
+    }
   }
 
   generateStarfield() {
     this.stars = [];
-    const starCount = Math.floor((this.width * this.height) / 2800);
+    const isMob = this.isMobile();
+    const starCount = isMob ? 160 : Math.floor((this.width * this.height) / 2800);
 
     for (let i = 0; i < starCount; i++) {
       this.stars.push({
-        x: (Math.random() - 0.5) * 3600,
-        y: (Math.random() - 0.5) * 3600,
-        size: Math.random() * 1.8 + 0.3,
+        x: (Math.random() - 0.5) * (isMob ? 2000 : 3600),
+        y: (Math.random() - 0.5) * (isMob ? 2400 : 3600),
+        size: Math.random() * (isMob ? 1.5 : 1.8) + 0.3,
         alpha: Math.random() * 0.75 + 0.2,
         twinkleSpeed: Math.random() * 0.02 + 0.005,
         twinkleOffset: Math.random() * Math.PI * 2,
@@ -153,20 +210,22 @@ class UniverseEngine {
       });
     }
 
-    // Cosmic Dust Nebulae
+    // Cosmic Dust Nebulae (Optimized for mobile performance)
     this.dustParticles = [];
-    for (let i = 0; i < 40; i++) {
+    const dustCount = isMob ? 10 : 40;
+    for (let i = 0; i < dustCount; i++) {
       this.dustParticles.push({
-        x: (Math.random() - 0.5) * 2600,
-        y: (Math.random() - 0.5) * 2600,
-        radius: Math.random() * 220 + 90,
+        x: (Math.random() - 0.5) * (isMob ? 1600 : 2600),
+        y: (Math.random() - 0.5) * (isMob ? 2000 : 2600),
+        radius: Math.random() * (isMob ? 140 : 220) + (isMob ? 60 : 90),
         color: i % 2 === 0 ? 'rgba(139, 92, 246, 0.035)' : 'rgba(6, 182, 212, 0.03)'
       });
     }
 
     // Landing Screen Stardust Particles
     this.landingParticles = [];
-    for (let i = 0; i < 70; i++) {
+    const landingCount = isMob ? 35 : 70;
+    for (let i = 0; i < landingCount; i++) {
       this.landingParticles.push({
         x: Math.random() * this.width,
         y: Math.random() * this.height,
@@ -184,7 +243,6 @@ class UniverseEngine {
   getPlanetVisualContent(id) {
     switch (id) {
       case 'roleflow':
-        // Purple orbital world, multiple structured rings, connected-system feeling
         return `
           <div class="planet-sphere sphere-roleflow"></div>
           <div class="planet-atmosphere atmosphere-roleflow"></div>
@@ -199,7 +257,6 @@ class UniverseEngine {
         `;
       
       case 'paytodo':
-        // Pink world, distinctive double-orbit crescent structure, product/escrow feeling
         return `
           <div class="planet-sphere sphere-paytodo"></div>
           <div class="planet-atmosphere atmosphere-paytodo"></div>
@@ -210,7 +267,6 @@ class UniverseEngine {
         `;
 
       case 'insightai':
-        // Blue/violet neural world, small glowing neural nodes around core, AI intelligence feeling
         return `
           <div class="planet-sphere sphere-insightai"></div>
           <div class="planet-atmosphere atmosphere-insightai"></div>
@@ -224,7 +280,6 @@ class UniverseEngine {
         `;
 
       case 'routewise':
-        // Cyan world, glowing route/path lines wrapping around surface, navigation feeling
         return `
           <div class="planet-sphere sphere-routewise"></div>
           <div class="planet-atmosphere atmosphere-routewise"></div>
@@ -234,7 +289,6 @@ class UniverseEngine {
         `;
 
       case 'deployhub':
-        // Teal technological core, segmented mechanical orbital rings (cgroup container plates)
         return `
           <div class="planet-sphere sphere-deployhub"></div>
           <div class="planet-atmosphere atmosphere-deployhub"></div>
@@ -244,7 +298,6 @@ class UniverseEngine {
         `;
 
       case 'medicura':
-        // Blue medical-tech world, pulsing heartbeat-inspired orbital rhythm ring
         return `
           <div class="planet-sphere sphere-medicura"></div>
           <div class="planet-atmosphere atmosphere-medicura"></div>
@@ -253,7 +306,6 @@ class UniverseEngine {
         `;
 
       case 'modelforge':
-        // Orange/gold molten core with rotating weight fragments
         return `
           <div class="planet-sphere sphere-modelforge"></div>
           <div class="planet-atmosphere atmosphere-modelforge"></div>
@@ -276,7 +328,6 @@ class UniverseEngine {
 
   getExperimentalVisualContent(id) {
     if (id === 'saferoute-ai') {
-      // Dark/amber world, shield atmosphere, safety route trajectory
       return `
         <div class="experimental-star-core exp-saferoute">
           <div class="safety-shield-halo"></div>
@@ -285,7 +336,6 @@ class UniverseEngine {
         </div>
       `;
     } else {
-      // Helmet Detection: Red/orange technical world, radar scanning orbital sweep
       return `
         <div class="experimental-star-core exp-helmet">
           <div class="radar-scan-sweep-ring"></div>
@@ -298,13 +348,18 @@ class UniverseEngine {
 
   mountPlanets() {
     this.planetsContainer.innerHTML = '';
+    const isMob = this.isMobile();
+
     this.planets = UNIVERSE_DATA.planets.map((data) => {
+      const coords = (isMob && data.mobileCoords) ? data.mobileCoords : data.coords;
+      const radius = (isMob && data.mobileRadius) ? data.mobileRadius : data.radius;
+
       const el = document.createElement('div');
       el.className = `planet-item planet-${data.id}`;
       el.id = `planet-${data.id}`;
-      el.style.setProperty('--x', `${data.coords.x}px`);
-      el.style.setProperty('--y', `${data.coords.y}px`);
-      el.style.setProperty('--size', `${data.radius * 2}px`);
+      el.style.setProperty('--x', `${coords.x}px`);
+      el.style.setProperty('--y', `${coords.y}px`);
+      el.style.setProperty('--size', `${radius * 2}px`);
       el.style.setProperty('--planet-color', data.color);
       el.style.setProperty('--planet-sec', data.secondaryColor);
       el.style.setProperty('--planet-glow', data.glowColor);
@@ -325,17 +380,18 @@ class UniverseEngine {
       `;
 
       el.addEventListener('mouseenter', () => {
+        if (this.isMobile()) return;
         sound.playHover();
         if (this.cursorRing) this.cursorRing.classList.add('cursor-hover');
         this.setStatus(`TARGET : ${data.name.toUpperCase()}`);
 
-        // If TRACE mode is active, dynamically trace technologies
         if (this.traceMode) {
           this.tracePlanetArchitecture(data);
         }
       });
 
       el.addEventListener('mouseleave', () => {
+        if (this.isMobile()) return;
         if (this.cursorRing) this.cursorRing.classList.remove('cursor-hover');
         this.resetStatus();
 
@@ -344,9 +400,14 @@ class UniverseEngine {
         }
       });
 
-      el.addEventListener('click', () => {
-        sound.playSelect();
-        this.openPlanetModal(data);
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (this.isMobile()) {
+          this.selectPlanet(data, el);
+        } else {
+          sound.playSelect();
+          this.openPlanetModal(data);
+        }
       });
 
       this.planetsContainer.appendChild(el);
@@ -354,31 +415,38 @@ class UniverseEngine {
       return {
         data,
         el,
-        x: data.coords.x,
-        y: data.coords.y,
-        baseX: data.coords.x,
-        baseY: data.coords.y,
+        x: coords.x,
+        y: coords.y,
+        baseX: coords.x,
+        baseY: coords.y,
         vx: 0,
         vy: 0,
-        radius: data.radius
+        radius: radius
       };
     });
   }
 
   mountExperimental() {
+    const isMob = this.isMobile();
+    const tagX = isMob ? '0px' : '520px';
+    const tagY = isMob ? '430px' : '-300px';
+
     this.experimentalContainer.innerHTML = `
-      <div class="sector-boundary-tag" style="--x: 520px; --y: -300px;">
+      <div class="sector-boundary-tag" style="--x: ${tagX}; --y: ${tagY};">
         <span class="sector-marker">// SECTOR : EXPERIMENTAL SYSTEMS</span>
       </div>
     `;
 
     this.experimental = UNIVERSE_DATA.experimental.map((data) => {
+      const coords = (isMob && data.mobileCoords) ? data.mobileCoords : data.coords;
+      const radius = (isMob && data.mobileRadius) ? data.mobileRadius : data.radius;
+
       const el = document.createElement('div');
       el.className = `experimental-item exp-${data.id}`;
       el.id = `exp-${data.id}`;
-      el.style.setProperty('--x', `${data.coords.x}px`);
-      el.style.setProperty('--y', `${data.coords.y}px`);
-      el.style.setProperty('--size', `${data.radius * 2}px`);
+      el.style.setProperty('--x', `${coords.x}px`);
+      el.style.setProperty('--y', `${coords.y}px`);
+      el.style.setProperty('--size', `${radius * 2}px`);
       el.style.setProperty('--star-color', data.color);
       el.style.setProperty('--star-glow', data.glowColor);
 
@@ -393,6 +461,7 @@ class UniverseEngine {
       `;
 
       el.addEventListener('mouseenter', () => {
+        if (this.isMobile()) return;
         sound.playHover();
         if (this.cursorRing) this.cursorRing.classList.add('cursor-hover');
         this.setStatus(`TARGET : ${data.name.toUpperCase()}`);
@@ -403,6 +472,7 @@ class UniverseEngine {
       });
 
       el.addEventListener('mouseleave', () => {
+        if (this.isMobile()) return;
         if (this.cursorRing) this.cursorRing.classList.remove('cursor-hover');
         this.resetStatus();
 
@@ -411,9 +481,14 @@ class UniverseEngine {
         }
       });
 
-      el.addEventListener('click', () => {
-        sound.playSelect();
-        this.openPlanetModal(data);
+      el.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (this.isMobile()) {
+          this.selectPlanet(data, el);
+        } else {
+          sound.playSelect();
+          this.openPlanetModal(data);
+        }
       });
 
       this.experimentalContainer.appendChild(el);
@@ -421,13 +496,13 @@ class UniverseEngine {
       return {
         data,
         el,
-        x: data.coords.x,
-        y: data.coords.y,
-        baseX: data.coords.x,
-        baseY: data.coords.y,
+        x: coords.x,
+        y: coords.y,
+        baseX: coords.x,
+        baseY: coords.y,
         vx: 0,
         vy: 0,
-        radius: data.radius
+        radius: radius
       };
     });
   }
@@ -436,14 +511,18 @@ class UniverseEngine {
     this.constellationNodesLayer.innerHTML = '';
     const gridEl = document.getElementById('tech-constellation-grid');
     if (gridEl) gridEl.innerHTML = '';
+    const isMob = this.isMobile();
 
     this.constellations = UNIVERSE_DATA.constellations.map((node) => {
+      const posX = (isMob && node.mobileX !== undefined) ? node.mobileX : node.x;
+      const posY = (isMob && node.mobileY !== undefined) ? node.mobileY : node.y;
+
       // Spatial star node in the universe
       const el = document.createElement('div');
       el.className = 'constellation-node';
       el.id = `constellation-${node.id}`;
-      el.style.setProperty('--x', `${node.x}px`);
-      el.style.setProperty('--y', `${node.y}px`);
+      el.style.setProperty('--x', `${posX}px`);
+      el.style.setProperty('--y', `${posY}px`);
 
       el.innerHTML = `
         <div class="tech-star-dot"></div>
@@ -477,8 +556,8 @@ class UniverseEngine {
       return {
         node,
         el,
-        x: node.x,
-        y: node.y
+        x: posX,
+        y: posY
       };
     });
   }
@@ -487,7 +566,6 @@ class UniverseEngine {
     if (!this.radarBlips) return;
     this.radarBlips.innerHTML = '';
 
-    // Radar mapping scale: universe coordinate (-800 to 800) -> radar pixel (0 to 84)
     const toRadar = (coord) => 42 + (coord / 900) * 38;
 
     // Station blip
@@ -542,6 +620,136 @@ class UniverseEngine {
     `).join('');
   }
 
+  selectPlanet(planetData, sourceEl) {
+    sound.playSelect();
+    this.selectedPlanet = planetData;
+
+    // Visual selection state on planet
+    document.querySelectorAll('.planet-item, .experimental-item').forEach(p => p.classList.remove('planet-selected'));
+    if (sourceEl) sourceEl.classList.add('planet-selected');
+
+    // Camera smoothly frames planet
+    const targetX = this.isMobile() && planetData.mobileCoords ? planetData.mobileCoords.x : planetData.coords.x;
+    const targetY = this.isMobile() && planetData.mobileCoords ? planetData.mobileCoords.y : planetData.coords.y;
+    this.camera.targetX = -targetX;
+    this.camera.targetY = -targetY + (this.isMobile() ? 75 : 0);
+    this.camera.targetScale = this.isMobile() ? 1.18 : 1.25;
+
+    this.setStatus(`TARGET : ${planetData.name.toUpperCase()}`);
+
+    if (this.traceMode) {
+      this.tracePlanetArchitecture(planetData);
+    }
+
+    // Populate Mobile Sheet
+    const sheet = document.getElementById('mobile-planet-sheet');
+    if (!sheet) return;
+
+    const badgeEl = document.getElementById('m-planet-badge');
+    const catEl = document.getElementById('m-planet-category');
+    const titleEl = document.getElementById('m-planet-title');
+    const dotEl = document.getElementById('m-planet-dot');
+    const taglineEl = document.getElementById('m-planet-tagline');
+    const demonstratesEl = document.getElementById('m-planet-demonstrates');
+    const stackEl = document.getElementById('m-planet-stack');
+    const linkLive = document.getElementById('m-link-live');
+    const linkGithub = document.getElementById('m-link-github');
+
+    if (badgeEl) badgeEl.textContent = (planetData.sector || 'ORBITAL SECTOR').toUpperCase();
+    if (catEl) catEl.textContent = planetData.category || 'Engineering';
+    if (titleEl) titleEl.textContent = planetData.name;
+    if (dotEl) {
+      dotEl.style.background = planetData.color || '#a855f7';
+      dotEl.style.boxShadow = `0 0 10px ${planetData.glowColor || 'rgba(168, 85, 247, 0.6)'}`;
+    }
+    if (taglineEl) taglineEl.textContent = planetData.tagline;
+    if (demonstratesEl) demonstratesEl.textContent = planetData.demonstrates;
+    if (stackEl && planetData.stack) {
+      stackEl.innerHTML = planetData.stack.map(s => `<span class="m-stack-chip">${s}</span>`).join('');
+    }
+
+    if (linkLive) {
+      if (planetData.links?.live) {
+        linkLive.href = planetData.links.live;
+        linkLive.style.display = 'inline-flex';
+      } else {
+        linkLive.style.display = 'none';
+      }
+    }
+
+    if (linkGithub) {
+      linkGithub.href = planetData.links?.github || 'https://github.com/vidit-ks/';
+    }
+
+    sheet.classList.remove('hidden');
+    sheet.setAttribute('aria-hidden', 'false');
+  }
+
+  closeMobilePlanetSheet() {
+    const sheet = document.getElementById('mobile-planet-sheet');
+    if (sheet) {
+      sheet.classList.add('hidden');
+      sheet.setAttribute('aria-hidden', 'true');
+    }
+    document.querySelectorAll('.planet-item, .experimental-item').forEach(p => p.classList.remove('planet-selected'));
+    this.selectedPlanet = null;
+    if (this.traceMode && !this.activeTech) {
+      this.clearTraceLinesOnly();
+    }
+    this.resetStatus();
+  }
+
+  toggleMobileSystems(show) {
+    const drawer = document.getElementById('mobile-systems-sheet');
+    const btn = document.getElementById('btn-systems-toggle');
+    if (!drawer) return;
+    const isHidden = drawer.classList.contains('hidden');
+    const willShow = show !== undefined ? show : isHidden;
+
+    if (willShow) {
+      sound.playSelect();
+      drawer.classList.remove('hidden');
+      drawer.setAttribute('aria-hidden', 'false');
+      if (btn) btn.classList.add('active');
+      this.updateMobileSystemsState();
+    } else {
+      sound.playSelect();
+      drawer.classList.add('hidden');
+      drawer.setAttribute('aria-hidden', 'true');
+      if (btn) btn.classList.remove('active');
+    }
+  }
+
+  updateMobileSystemsState() {
+    const gravState = document.getElementById('m-gravity-state');
+    const audioState = document.getElementById('m-audio-state');
+    const iconSoundOff = document.getElementById('m-icon-sound-off');
+    const iconSoundOn = document.getElementById('m-icon-sound-on');
+    const btnGravity = document.getElementById('btn-m-gravity');
+    const btnAudio = document.getElementById('btn-m-audio');
+
+    if (gravState) {
+      gravState.textContent = this.gravityMode ? 'ACTIVE (2.40 G)' : 'OFF (1.00 G)';
+      gravState.className = `m-tool-state ${this.gravityMode ? 'state-active' : ''}`;
+    }
+    if (btnGravity) {
+      btnGravity.classList.toggle('active', this.gravityMode);
+    }
+
+    const isAudioEnabled = sound.enabled;
+    if (audioState) {
+      audioState.textContent = isAudioEnabled ? 'PLAYING AMBIENCE' : 'MUTED';
+      audioState.className = `m-tool-state ${isAudioEnabled ? 'state-active' : ''}`;
+    }
+    if (btnAudio) {
+      btnAudio.classList.toggle('active', isAudioEnabled);
+    }
+    if (iconSoundOff && iconSoundOn) {
+      iconSoundOff.classList.toggle('hidden', isAudioEnabled);
+      iconSoundOn.classList.toggle('hidden', !isAudioEnabled);
+    }
+  }
+
   bindEvents() {
     // Landing Singularity Warp
     const btnEnter = document.getElementById('btn-enter-universe');
@@ -564,35 +772,31 @@ class UniverseEngine {
     if (btnEnter) btnEnter.addEventListener('click', triggerEnter);
     if (singularity) singularity.addEventListener('click', triggerEnter);
 
-    // Mouse Movement Tracking
+    // Mouse Movement Tracking (Desktop pointer only)
     window.addEventListener('mousemove', (e) => {
       this.mouse.x = e.clientX;
       this.mouse.y = e.clientY;
 
-      // Custom Cursor Center Dot (Precisely centered)
       if (this.cursorDot) {
         this.cursorDot.style.transform = `translate3d(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%), 0)`;
       }
 
-      // Landing Screen Aurora Light Movement
       if (!this.isEntered && this.landingAurora) {
         this.landingAurora.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
       }
 
-      // World Space Coordinates Calculation
       const cx = this.width / 2;
       const cy = this.height / 2;
       this.mouse.worldX = (this.mouse.x - cx - this.camera.x) / this.camera.scale;
       this.mouse.worldY = (this.mouse.y - cy - this.camera.y) / this.camera.scale;
 
-      // Update Telemetry
       const teleCoord = document.getElementById('tele-coord');
       if (teleCoord) {
         teleCoord.textContent = `X: ${Math.round(this.mouse.worldX)} Y: ${Math.round(this.mouse.worldY)}`;
       }
 
-      // Parallax Target with extended roaming space on sides
-      if (!this.mouse.isDown) {
+      // Parallax Target
+      if (!this.mouse.isDown && !this.isMobile()) {
         const nx = (e.clientX / this.width - 0.5) * 2;
         const ny = (e.clientY / this.height - 0.5) * 2;
         this.camera.targetX = -nx * 240;
@@ -600,10 +804,9 @@ class UniverseEngine {
       }
     });
 
-    // Drag to Pan Space (Desktop & Touch)
+    // Drag to Pan Space (Desktop)
     window.addEventListener('mousedown', (e) => {
-      // Ignore clicks on HUD buttons or modals
-      if (e.target.closest('.dock-hud, .top-hud, .universe-overlay, .spectrum-filter-bar')) return;
+      if (e.target.closest('.dock-hud, .top-hud, .universe-overlay, .spectrum-filter-bar, .mobile-planet-sheet, .mobile-systems-sheet, .mobile-trace-guide')) return;
       this.mouse.isDown = true;
       this.mouse.dragStartX = e.clientX - this.camera.x;
       this.mouse.dragStartY = e.clientY - this.camera.y;
@@ -620,11 +823,20 @@ class UniverseEngine {
       this.mouse.isDown = false;
     });
 
-    // Touch Support for Mobile / Tablets
+    // Touch Support for Mobile / Tablets with Tap vs Drag disambiguation
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    let isTouchDragging = false;
+
     window.addEventListener('touchstart', (e) => {
-      if (e.target.closest('.dock-hud, .top-hud, .universe-overlay, .spectrum-filter-bar')) return;
+      if (e.target.closest('.dock-hud, .top-hud, .universe-overlay, .spectrum-filter-bar, .mobile-planet-sheet, .mobile-systems-sheet, .mobile-trace-guide')) return;
       if (e.touches.length === 1) {
         this.mouse.isDown = true;
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = performance.now();
+        isTouchDragging = false;
         this.mouse.dragStartX = e.touches[0].clientX - this.camera.x;
         this.mouse.dragStartY = e.touches[0].clientY - this.camera.y;
       }
@@ -632,24 +844,38 @@ class UniverseEngine {
 
     window.addEventListener('touchmove', (e) => {
       if (this.mouse.isDown && e.touches.length === 1) {
+        const dist = Math.hypot(e.touches[0].clientX - touchStartX, e.touches[0].clientY - touchStartY);
+        if (dist > 8) {
+          isTouchDragging = true;
+        }
         this.camera.targetX = e.touches[0].clientX - this.mouse.dragStartX;
         this.camera.targetY = e.touches[0].clientY - this.mouse.dragStartY;
       }
     }, { passive: true });
 
-    window.addEventListener('touchend', () => {
+    window.addEventListener('touchend', (e) => {
       this.mouse.isDown = false;
+      const touchDuration = performance.now() - touchStartTime;
+
+      // Quick tap on empty canvas space dismisses mobile selection & card
+      if (!isTouchDragging && touchDuration < 350) {
+        const target = e.target;
+        if (!target.closest('.planet-item, .experimental-item, .central-station, .comm-satellite, .constellation-node, .dock-hud, .top-hud, .universe-overlay, .mobile-planet-sheet, .mobile-systems-sheet')) {
+          this.closeMobilePlanetSheet();
+          if (this.activeTech) this.clearTechnologySelection();
+        }
+      }
     });
 
     // Wheel Zoom
     window.addEventListener('wheel', (e) => {
-      if (e.target.closest('.universe-overlay')) return;
+      if (e.target.closest('.universe-overlay, .mobile-planet-sheet, .mobile-systems-sheet')) return;
       const zoomDelta = e.deltaY * -0.001;
       this.camera.targetScale = Math.min(Math.max(this.camera.targetScale + zoomDelta, 0.5), 1.8);
     }, { passive: true });
 
     // HUD Actions
-    // TRACE Mode Toggle (New Feature)
+    // TRACE Mode Toggle
     const btnTrace = document.getElementById('btn-trace');
     const traceStatus = document.getElementById('trace-status');
     if (btnTrace) {
@@ -663,6 +889,9 @@ class UniverseEngine {
             traceStatus.className = 'status-on';
           }
           this.setStatus('TRACE : ACTIVE');
+          if (this.mobileTraceGuide && this.isMobile()) {
+            this.mobileTraceGuide.classList.remove('hidden');
+          }
           if (this.cursorRing) this.cursorRing.classList.add('cursor-hover');
         } else {
           btnTrace.classList.remove('active');
@@ -672,6 +901,9 @@ class UniverseEngine {
           }
           this.resetStatus();
           this.clearTechnologySelection();
+          if (this.mobileTraceGuide) {
+            this.mobileTraceGuide.classList.add('hidden');
+          }
           if (this.cursorRing) this.cursorRing.classList.remove('cursor-hover');
         }
       });
@@ -681,75 +913,126 @@ class UniverseEngine {
     const btnGravity = document.getElementById('btn-gravity');
     const gravityStatus = document.getElementById('gravity-status');
     const teleGrav = document.getElementById('tele-grav');
-    if (btnGravity) {
-      btnGravity.addEventListener('click', () => {
-        sound.playSelect();
-        this.gravityMode = !this.gravityMode;
-        if (this.gravityMode) {
-          btnGravity.classList.add('active');
-          if (gravityStatus) {
-            gravityStatus.textContent = 'ON';
-            gravityStatus.className = 'status-on';
-          }
-          if (teleGrav) teleGrav.textContent = '2.40 G';
-          if (this.cursorRing) this.cursorRing.classList.add('cursor-grav-active');
-        } else {
-          btnGravity.classList.remove('active');
-          if (gravityStatus) {
-            gravityStatus.textContent = 'OFF';
-            gravityStatus.className = 'status-off';
-          }
-          if (teleGrav) teleGrav.textContent = '1.00 G';
-          if (this.cursorRing) this.cursorRing.classList.remove('cursor-grav-active');
-          // Smoothly reset body velocities so they cleanly return to equilibrium
-          [...this.planets, ...this.experimental].forEach(b => {
-            b.vx = 0;
-            b.vy = 0;
-          });
+    const toggleGravityMode = () => {
+      sound.playSelect();
+      this.gravityMode = !this.gravityMode;
+      if (this.gravityMode) {
+        btnGravity?.classList.add('active');
+        if (gravityStatus) {
+          gravityStatus.textContent = 'ON';
+          gravityStatus.className = 'status-on';
         }
-      });
-    }
+        if (teleGrav) teleGrav.textContent = '2.40 G';
+        if (this.cursorRing) this.cursorRing.classList.add('cursor-grav-active');
+      } else {
+        btnGravity?.classList.remove('active');
+        if (gravityStatus) {
+          gravityStatus.textContent = 'OFF';
+          gravityStatus.className = 'status-off';
+        }
+        if (teleGrav) teleGrav.textContent = '1.00 G';
+        if (this.cursorRing) this.cursorRing.classList.remove('cursor-grav-active');
+        [...this.planets, ...this.experimental].forEach(b => {
+          b.vx = 0;
+          b.vy = 0;
+        });
+      }
+      this.updateMobileSystemsState();
+    };
+
+    if (btnGravity) btnGravity.addEventListener('click', toggleGravityMode);
+    document.getElementById('btn-m-gravity')?.addEventListener('click', toggleGravityMode);
 
     // Audio Toggle
     const btnAudio = document.getElementById('btn-audio-toggle');
     const iconSoundOff = document.getElementById('icon-sound-off');
     const iconSoundOn = document.getElementById('icon-sound-on');
-    if (btnAudio) {
-      btnAudio.addEventListener('click', () => {
-        const isEnabled = sound.toggle();
-        if (isEnabled) {
-          iconSoundOff.classList.add('hidden');
-          iconSoundOn.classList.remove('hidden');
-          btnAudio.classList.add('active');
-        } else {
-          iconSoundOff.classList.remove('hidden');
-          iconSoundOn.classList.add('hidden');
-          btnAudio.classList.remove('active');
-        }
-      });
-    }
+    const toggleAudioSynth = () => {
+      const isEnabled = sound.toggle();
+      if (isEnabled) {
+        iconSoundOff?.classList.add('hidden');
+        iconSoundOn?.classList.remove('hidden');
+        btnAudio?.classList.add('active');
+      } else {
+        iconSoundOff?.classList.remove('hidden');
+        iconSoundOn?.classList.add('hidden');
+        btnAudio?.classList.remove('active');
+      }
+      this.updateMobileSystemsState();
+    };
+
+    if (btnAudio) btnAudio.addEventListener('click', toggleAudioSynth);
+    document.getElementById('btn-m-audio')?.addEventListener('click', toggleAudioSynth);
 
     // Recenter
     const btnRecenter = document.getElementById('btn-recenter');
-    if (btnRecenter) {
-      btnRecenter.addEventListener('click', () => {
-        sound.playSelect();
-        this.camera.targetX = 0;
-        this.camera.targetY = 0;
-        this.camera.targetScale = 1;
-        this.clearTechnologySelection();
-        this.resetStatus();
+    const handleRecenter = () => {
+      sound.playSelect();
+      this.camera.targetX = 0;
+      this.camera.targetY = 0;
+      this.camera.targetScale = 1;
+      this.clearTechnologySelection();
+      this.closeMobilePlanetSheet();
+      this.toggleMobileSystems(false);
+      this.resetStatus();
+    };
+
+    if (btnRecenter) btnRecenter.addEventListener('click', handleRecenter);
+    document.getElementById('btn-m-recenter')?.addEventListener('click', handleRecenter);
+
+    // Systems Drawer Toggle (Mobile)
+    const btnSystemsToggle = document.getElementById('btn-systems-toggle');
+    if (btnSystemsToggle) {
+      btnSystemsToggle.addEventListener('click', () => {
+        this.toggleMobileSystems();
       });
     }
 
-    // Filter Pills
-    document.querySelectorAll('.filter-pill').forEach(pill => {
-      pill.addEventListener('click', (e) => {
+    document.getElementById('mobile-systems-backdrop')?.addEventListener('click', () => {
+      this.toggleMobileSystems(false);
+    });
+
+    document.getElementById('btn-close-mobile-systems')?.addEventListener('click', () => {
+      this.toggleMobileSystems(false);
+    });
+
+    document.getElementById('btn-m-constellations')?.addEventListener('click', () => {
+      this.toggleMobileSystems(false);
+      sound.playSelect();
+      this.setStatus('MODE : CONSTELLATIONS');
+      this.openModal('constellations-modal');
+    });
+
+    // Mobile Sheet Actions
+    document.getElementById('btn-close-mobile-sheet')?.addEventListener('click', () => {
+      sound.playSelect();
+      this.closeMobilePlanetSheet();
+    });
+
+    document.getElementById('m-btn-full-specs')?.addEventListener('click', () => {
+      if (this.selectedPlanet) {
         sound.playSelect();
-        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
-        pill.classList.add('active');
+        this.openPlanetModal(this.selectedPlanet);
+      }
+    });
+
+    // Filter Pills (Desktop bar & Mobile Drawer)
+    const handleFilterSelect = (filter) => {
+      sound.playSelect();
+      document.querySelectorAll('.filter-pill, .m-filter-pill').forEach(p => {
+        if (p.dataset.filter === filter) {
+          p.classList.add('active');
+        } else {
+          p.classList.remove('active');
+        }
+      });
+      this.applyFilter(filter);
+    };
+
+    document.querySelectorAll('.filter-pill, .m-filter-pill').forEach(pill => {
+      pill.addEventListener('click', () => {
         const filter = pill.dataset.filter;
-        this.applyFilter(filter);
+        handleFilterSelect(filter);
       });
     });
 
@@ -757,14 +1040,18 @@ class UniverseEngine {
     const station = document.getElementById('central-station');
     if (station) {
       station.addEventListener('mouseenter', () => {
+        if (this.isMobile()) return;
         sound.playHover();
         this.setStatus('TARGET : MISSION CONTROL');
       });
       station.addEventListener('mouseleave', () => {
+        if (this.isMobile()) return;
         this.resetStatus();
       });
-      station.addEventListener('click', () => {
+      station.addEventListener('click', (e) => {
+        e.stopPropagation();
         sound.playSelect();
+        this.closeMobilePlanetSheet();
         this.openModal('mission-control-modal');
       });
     }
@@ -773,14 +1060,18 @@ class UniverseEngine {
     const satellite = document.getElementById('comm-satellite');
     if (satellite) {
       satellite.addEventListener('mouseenter', () => {
+        if (this.isMobile()) return;
         sound.playHover();
         this.setStatus('TARGET : COMMUNICATION SATELLITE');
       });
       satellite.addEventListener('mouseleave', () => {
+        if (this.isMobile()) return;
         this.resetStatus();
       });
-      satellite.addEventListener('click', () => {
+      satellite.addEventListener('click', (e) => {
+        e.stopPropagation();
         sound.playSelect();
+        this.closeMobilePlanetSheet();
         this.openModal('satellite-modal');
       });
     }
@@ -793,6 +1084,7 @@ class UniverseEngine {
 
     const planetTechs = planetData.technologies || [];
     const allTechNodes = UNIVERSE_DATA.constellations.filter(c => planetTechs.includes(c.name));
+    const isMob = this.isMobile();
 
     // Highlight related constellation stars in space
     document.querySelectorAll('.constellation-node').forEach(nodeEl => {
@@ -822,12 +1114,17 @@ class UniverseEngine {
       }
     });
 
-    // Draw connecting paths from the hovered planet to its technology stars
+    // Draw connecting paths from the selected planet to its technology stars
+    const planetCoords = (isMob && planetData.mobileCoords) ? planetData.mobileCoords : planetData.coords;
+
     allTechNodes.forEach(techNode => {
+      const techX = (isMob && techNode.mobileX !== undefined) ? techNode.mobileX : techNode.x;
+      const techY = (isMob && techNode.mobileY !== undefined) ? techNode.mobileY : techNode.y;
+
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
-      const midX = (planetData.coords.x + techNode.x) / 2;
-      const midY = (planetData.coords.y + techNode.y) / 2 - 25;
-      const d = `M ${planetData.coords.x} ${planetData.coords.y} Q ${midX} ${midY} ${techNode.x} ${techNode.y}`;
+      const midX = (planetCoords.x + techX) / 2;
+      const midY = (planetCoords.y + techY) / 2 - 25;
+      const d = `M ${planetCoords.x} ${planetCoords.y} Q ${midX} ${midY} ${techX} ${techY}`;
 
       path.setAttribute('d', d);
       path.setAttribute('fill', 'none');
@@ -879,7 +1176,6 @@ class UniverseEngine {
   }
 
   selectTechnology(techNode) {
-    // If clicking the same already-active technology, toggle it OFF!
     if (this.activeTech && this.activeTech.id === techNode.id) {
       this.clearTechnologySelection();
       return;
@@ -940,25 +1236,20 @@ class UniverseEngine {
   clearTechnologySelection() {
     this.activeTech = null;
 
-    // Remove highlighted states on constellation nodes
     document.querySelectorAll('.constellation-node').forEach(nodeEl => {
       nodeEl.classList.remove('highlighted');
     });
 
-    // Remove active state on pills
     document.querySelectorAll('.tech-grid-pill').forEach(pill => {
       pill.classList.remove('active');
     });
 
-    // Clear SVG splines
     if (this.svg) {
       this.svg.innerHTML = '';
     }
 
-    // Restore planet opacities based on active filter
     this.applyFilter(this.activeFilter);
 
-    // Reset modal container text
     const activeTechTitle = document.getElementById('active-tech-name');
     const activeProjContainer = document.getElementById('active-connected-projects');
     if (activeTechTitle) activeTechTitle.textContent = 'Select a node above';
@@ -969,6 +1260,10 @@ class UniverseEngine {
     if (!this.svg) return;
     this.svg.innerHTML = '';
 
+    const isMob = this.isMobile();
+    const techX = (isMob && techNode.mobileX !== undefined) ? techNode.mobileX : techNode.x;
+    const techY = (isMob && techNode.mobileY !== undefined) ? techNode.mobileY : techNode.y;
+
     const allBodies = [...this.planets, ...this.experimental];
     const connectedBodies = allBodies.filter(b => techNode.projects.includes(b.data.id));
 
@@ -976,9 +1271,9 @@ class UniverseEngine {
       const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       path.setAttribute('id', `spline-${techNode.id}-${body.data.id}`);
       
-      const midX = (techNode.x + body.x) / 2;
-      const midY = (techNode.y + body.y) / 2 - 35;
-      const d = `M ${techNode.x} ${techNode.y} Q ${midX} ${midY} ${body.x} ${body.y}`;
+      const midX = (techX + body.x) / 2;
+      const midY = (techY + body.y) / 2 - 35;
+      const d = `M ${techX} ${techY} Q ${midX} ${midY} ${body.x} ${body.y}`;
 
       path.setAttribute('d', d);
       path.setAttribute('fill', 'none');
@@ -996,15 +1291,19 @@ class UniverseEngine {
   updateConstellationSplines() {
     if (!this.activeTech || !this.svg) return;
 
+    const isMob = this.isMobile();
+    const techX = (isMob && this.activeTech.mobileX !== undefined) ? this.activeTech.mobileX : this.activeTech.x;
+    const techY = (isMob && this.activeTech.mobileY !== undefined) ? this.activeTech.mobileY : this.activeTech.y;
+
     const allBodies = [...this.planets, ...this.experimental];
     const connectedBodies = allBodies.filter(b => this.activeTech.projects.includes(b.data.id));
 
     connectedBodies.forEach(body => {
       const path = document.getElementById(`spline-${this.activeTech.id}-${body.data.id}`);
       if (path) {
-        const midX = (this.activeTech.x + body.x) / 2;
-        const midY = (this.activeTech.y + body.y) / 2 - 35;
-        path.setAttribute('d', `M ${this.activeTech.x} ${this.activeTech.y} Q ${midX} ${midY} ${body.x} ${body.y}`);
+        const midX = (techX + body.x) / 2;
+        const midY = (techY + body.y) / 2 - 35;
+        path.setAttribute('d', `M ${techX} ${techY} Q ${midX} ${midY} ${body.x} ${body.y}`);
       }
     });
   }
@@ -1019,18 +1318,21 @@ class UniverseEngine {
 
     document.getElementById('btn-mission-control')?.addEventListener('click', () => {
       sound.playSelect();
+      this.closeMobilePlanetSheet();
       this.setStatus('TARGET : MISSION CONTROL');
       this.openModal('mission-control-modal');
     });
 
     document.getElementById('btn-recruiter-mode')?.addEventListener('click', () => {
       sound.playSelect();
+      this.closeMobilePlanetSheet();
       this.setStatus('MODE : RECRUITER');
       this.openModal('recruiter-modal');
     });
 
     document.getElementById('btn-satellite-dock')?.addEventListener('click', () => {
       sound.playSelect();
+      this.closeMobilePlanetSheet();
       this.setStatus('TARGET : SATELLITE');
       this.openModal('satellite-modal');
     });
@@ -1055,20 +1357,15 @@ class UniverseEngine {
       this.resetStatus();
     });
 
-    // Resume Modals Trigger
+    // Resume Actions Triggers
     document.getElementById('btn-open-resume-action')?.addEventListener('click', () => {
       sound.playSelect();
-      this.openModal('resume-modal');
     });
     document.getElementById('btn-recruiter-resume')?.addEventListener('click', () => {
       sound.playSelect();
-      this.openModal('resume-modal');
     });
-
-    // Download PDF Resume Simulation
     document.getElementById('btn-download-resume-file')?.addEventListener('click', () => {
       sound.playSelect();
-      window.print();
     });
 
     // Satellite Transmission Form Handler (Web3Forms Direct Client-Side API)
@@ -1169,7 +1466,6 @@ class UniverseEngine {
           const result = await response.json();
 
           if (response.ok && result.success) {
-            // Success State
             sound.playChime(640, 'sine', 0.5);
             commForm.reset();
             clearValidation();
@@ -1187,7 +1483,6 @@ class UniverseEngine {
               if (btnSubmitText) btnSubmitText.textContent = 'TRANSMIT MESSAGE →';
             }, 4500);
           } else {
-            // Failure State (Keep entered form data so visitor can retry)
             sound.playChime(220, 'sawtooth', 0.4);
             if (statusBox) {
               statusBox.className = 'comm-status-box status-error';
@@ -1199,7 +1494,6 @@ class UniverseEngine {
             if (btnSubmitText) btnSubmitText.textContent = 'TRANSMIT MESSAGE →';
           }
         } catch (err) {
-          // Network Error State (Keep entered form data so visitor can retry)
           sound.playChime(220, 'sawtooth', 0.4);
           if (statusBox) {
             statusBox.className = 'comm-status-box status-error';
@@ -1224,11 +1518,12 @@ class UniverseEngine {
     this.selectedPlanet = planetData;
     
     // Zoom camera towards planet coordinates smoothly
-    this.camera.targetX = -planetData.coords.x;
-    this.camera.targetY = -planetData.coords.y;
+    const targetX = this.isMobile() && planetData.mobileCoords ? planetData.mobileCoords.x : planetData.coords.x;
+    const targetY = this.isMobile() && planetData.mobileCoords ? planetData.mobileCoords.y : planetData.coords.y;
+    this.camera.targetX = -targetX;
+    this.camera.targetY = -targetY;
     this.camera.targetScale = 1.25;
 
-    // Populate modal in exact requested order:
     // 1. Project name
     document.getElementById('modal-planet-name').textContent = planetData.name;
     document.getElementById('modal-planet-category').textContent = planetData.category;
@@ -1314,8 +1609,8 @@ class UniverseEngine {
   }
 
   updatePhysics() {
-    // Smooth Lerp for Cursor Ring (Concentric around mouse dot)
-    if (this.cursorRing) {
+    // Smooth Lerp for Cursor Ring (Desktop pointer only)
+    if (this.cursorRing && !this.isMobile()) {
       this.cursorRingPos.x += (this.mouse.x - this.cursorRingPos.x) * 0.28;
       this.cursorRingPos.y += (this.mouse.y - this.cursorRingPos.y) * 0.28;
       this.cursorRing.style.transform = `translate3d(calc(${this.cursorRingPos.x}px - 50%), calc(${this.cursorRingPos.y}px - 50%), 0)`;
@@ -1330,7 +1625,7 @@ class UniverseEngine {
       this.spatialWorld.style.transform = `translate(${this.camera.x}px, ${this.camera.y}px) scale(${this.camera.scale})`;
     }
 
-    // Dynamically calculate cursor world coordinates per frame based on current interpolated camera
+    // World coordinates calculation
     const cx = this.width / 2;
     const cy = this.height / 2;
     this.mouse.worldX = (this.mouse.x - cx - this.camera.x) / this.camera.scale;
@@ -1348,24 +1643,22 @@ class UniverseEngine {
       let damping = 0.84;
 
       if (this.gravityMode) {
-        // Gravitational Attraction Well (gentle, subtle pull towards cursor)
         const gravityRadius = 420;
         if (dist < gravityRadius && dist > 1) {
-          const factor = (gravityRadius - dist) / gravityRadius; // 0 to 1
-          const pullForce = factor * 1.1; // Gentle pull
+          const factor = (gravityRadius - dist) / gravityRadius;
+          const pullForce = factor * 1.1;
           body.vx += (dx / dist) * pullForce;
           body.vy += (dy / dist) * pullForce;
         }
-        springK = 0.036; // Soft anchor to orbit
+        springK = 0.036;
         damping = 0.86;
-      } else {
-        // Proximity Subtle Repulsion (Standard exploration mode)
+      } else if (!this.isMobile()) {
         if (dist < 140 && dist > 5) {
           const repelForce = (140 - dist) / 140;
           body.vx -= (dx / dist) * repelForce * 0.9;
           body.vy -= (dy / dist) * repelForce * 0.9;
         }
-        springK = 0.055; // Snappy return to base orbit
+        springK = 0.055;
         damping = 0.84;
       }
 
@@ -1379,7 +1672,6 @@ class UniverseEngine {
       body.x += body.vx;
       body.y += body.vy;
 
-      // Restrain maximum displacement so planets are drawn slightly towards cursor without disconnecting
       const dispX = body.x - body.baseX;
       const dispY = body.y - body.baseY;
       const maxDisp = this.gravityMode ? 45 : 25;
@@ -1395,7 +1687,6 @@ class UniverseEngine {
       body.el.style.setProperty('--y', `${body.y}px`);
     });
 
-    // Dynamically update connected constellation splines as planets sway
     if (this.activeTech) {
       this.updateConstellationSplines();
     }
@@ -1437,11 +1728,9 @@ class UniverseEngine {
     // Render Multi-layer Stars
     const time = performance.now() * 0.001;
     this.stars.forEach(star => {
-      // Parallax calculation
       const sx = cx + (star.x + this.camera.x * star.layer) * this.camera.scale;
       const sy = cy + (star.y + this.camera.y * star.layer) * this.camera.scale;
 
-      // Wrap around bounds
       if (sx >= -20 && sx <= this.width + 20 && sy >= -20 && sy <= this.height + 20) {
         const twinkle = Math.sin(time * star.twinkleSpeed * 50 + star.twinkleOffset) * 0.3 + 0.7;
         this.ctx.fillStyle = `rgba(255, 255, 255, ${star.alpha * twinkle})`;
@@ -1454,7 +1743,8 @@ class UniverseEngine {
     // Render Orbital Trace Guides (Faint orbital rings around core station)
     this.ctx.strokeStyle = 'rgba(255, 255, 255, 0.025)';
     this.ctx.lineWidth = 1;
-    [350, 480, 800].forEach(radius => {
+    const radii = this.isMobile() ? [220, 360, 520] : [350, 480, 800];
+    radii.forEach(radius => {
       this.ctx.beginPath();
       this.ctx.arc(cx + this.camera.x * this.camera.scale, cy + this.camera.y * this.camera.scale, radius * this.camera.scale, 0, Math.PI * 2);
       this.ctx.stroke();

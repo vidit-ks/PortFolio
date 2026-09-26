@@ -163,11 +163,17 @@
       </div>
     </header>
 
+    <!-- MOBILE TRACE INSTRUCTION BANNER -->
+    <div id="mobile-trace-guide" class="mobile-trace-guide hidden">
+      <span class="trace-guide-dot"></span>
+      <span class="trace-guide-text">TRACE ACTIVE — Tap any planet to reveal connections</span>
+    </div>
+
     <!-- FLOATING BOTTOM DOCK HUD (PRIMARY CONTROLS) -->
     <nav class="dock-hud" aria-label="Universe Navigation">
       <div class="dock-glass">
         
-        <!-- TRACE Mode Toggle (New Feature) -->
+        <!-- TRACE Mode Toggle -->
         <button id="btn-trace" class="dock-btn" title="Toggle Architecture Technology Trace Mode">
           <div class="dock-icon">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -212,7 +218,7 @@
               <circle cx="12" cy="7" r="4"></circle>
             </svg>
           </div>
-          <span class="dock-label">MISSION CONTROL</span>
+          <span class="dock-label">CORE</span>
         </button>
 
         <!-- Communication Satellite (Contact) -->
@@ -223,15 +229,32 @@
               <path d="M22 2L15 22L11 13L2 9L22 2Z"></path>
             </svg>
           </div>
-          <span class="dock-label">SATELLITE</span>
+          <span class="dock-label">CONTACT</span>
+        </button>
+
+        <!-- Systems / Secondary Controls Toggle (Mobile-friendly) -->
+        <button id="btn-systems-toggle" class="dock-btn dock-btn-systems" title="Orbital Systems & Controls">
+          <div class="dock-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"></circle>
+              <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+            </svg>
+          </div>
+          <span class="dock-label">SYSTEMS</span>
         </button>
 
         <div class="dock-divider"></div>
 
         <!-- RECRUITER MODE (Priority Quick View) -->
         <button id="btn-recruiter-mode" class="dock-btn dock-btn-highlight" title="Open 1-Minute Executive Summary">
-          <span class="btn-pulse-dot"></span>
-          <span class="dock-label font-bold">RECRUITER MODE</span>
+          <div class="dock-icon dock-icon-pulse">
+            <span class="btn-pulse-dot"></span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+              <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+            </svg>
+          </div>
+          <span class="dock-label font-bold">RECRUITER</span>
         </button>
 
         <!-- Audio Synthesizer Toggle -->
@@ -266,12 +289,150 @@
       <span class="radar-label">ORBITAL RADAR</span>
     </div>
 
-    <!-- FILTER SPECTRUM PILLS (Top Center Quick Switch) -->
+    <!-- FILTER SPECTRUM PILLS (Top Center Quick Switch - Desktop/Tablet) -->
     <div class="spectrum-filter-bar">
       <button class="filter-pill active" data-filter="all">ALL WORLDS</button>
       <button class="filter-pill" data-filter="ai">AI / NEURAL</button>
       <button class="filter-pill" data-filter="fullstack">FULL-STACK</button>
       <button class="filter-pill" data-filter="infra">INFRA & ROUTING</button>
+    </div>
+
+    <!-- MOBILE QUICK PLANET PANEL / CARD -->
+    <div id="mobile-planet-sheet" class="mobile-planet-sheet hidden" aria-hidden="true">
+      <div class="sheet-drag-handle"></div>
+      <div class="mobile-sheet-header">
+        <div class="mobile-sheet-pill-wrap">
+          <span class="mobile-sheet-badge" id="m-planet-badge">INNER CORE</span>
+          <span class="mobile-sheet-cat" id="m-planet-category">Product / Workflow</span>
+        </div>
+        <button id="btn-close-mobile-sheet" class="btn-close-mobile-sheet" aria-label="Close project info">✕</button>
+      </div>
+      
+      <div class="mobile-sheet-title-row">
+        <div class="mobile-sheet-dot" id="m-planet-dot"></div>
+        <h3 class="mobile-sheet-title" id="m-planet-title">RoleFlow</h3>
+      </div>
+
+      <div class="mobile-sheet-section">
+        <span class="mobile-sec-label">WHAT IT DOES</span>
+        <p class="mobile-sec-text" id="m-planet-tagline"></p>
+      </div>
+
+      <div class="mobile-sheet-section mobile-sec-demonstrates">
+        <span class="mobile-sec-label label-accent">WHAT THIS DEMONSTRATES</span>
+        <p class="mobile-sec-text text-demonstrates" id="m-planet-demonstrates"></p>
+      </div>
+
+      <div class="mobile-sheet-stack" id="m-planet-stack"></div>
+
+      <div class="mobile-sheet-actions">
+        <a id="m-link-live" href="#" target="_blank" rel="noopener noreferrer" class="btn-m-action btn-m-primary">
+          <span>LIVE DEMO</span>
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+            <polyline points="15 3 21 3 21 9"></polyline>
+            <line x1="21" y1="3" x2="14" y2="10"></line>
+          </svg>
+        </a>
+        <a id="m-link-github" href="#" target="_blank" rel="noopener noreferrer" class="btn-m-action btn-m-secondary">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+          <span>GITHUB</span>
+        </a>
+        <button id="m-btn-full-specs" class="btn-m-action btn-m-ghost" title="View Full Hologram & Telemetry">
+          <span>SPECS</span>
+          <span class="btn-m-arrow">→</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- MOBILE SYSTEMS DRAWER (Expandable Secondary Controls) -->
+    <div id="mobile-systems-sheet" class="mobile-systems-sheet hidden" aria-hidden="true">
+      <div class="mobile-systems-backdrop" id="mobile-systems-backdrop"></div>
+      <div class="mobile-systems-card">
+        <div class="mobile-systems-head">
+          <div class="m-sys-title-wrap">
+            <span class="m-sys-badge">// ORBITAL CONTROLS</span>
+            <h4 class="m-sys-title">SYSTEMS & FILTERS</h4>
+          </div>
+          <button id="btn-close-mobile-systems" class="btn-close-mobile-sheet" aria-label="Close systems panel">✕</button>
+        </div>
+
+        <!-- Mobile Spectra Filters -->
+        <div class="m-sys-section">
+          <span class="m-sys-lbl">FILTER SECTOR SPECTRUM</span>
+          <div class="m-filter-pills-grid">
+            <button class="m-filter-pill active" data-filter="all">ALL WORLDS</button>
+            <button class="m-filter-pill" data-filter="ai">AI / NEURAL</button>
+            <button class="m-filter-pill" data-filter="fullstack">FULL-STACK</button>
+            <button class="m-filter-pill" data-filter="infra">INFRA & ROUTING</button>
+          </div>
+        </div>
+
+        <!-- Mobile Quick Tools Grid -->
+        <div class="m-sys-tools-grid">
+          <button id="btn-m-gravity" class="m-tool-btn">
+            <div class="m-tool-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="9"></circle>
+                <path d="M12 3v18"></path>
+                <path d="M3 12h18"></path>
+              </svg>
+            </div>
+            <div class="m-tool-info">
+              <span class="m-tool-name">GRAVITY FIELD</span>
+              <span class="m-tool-state" id="m-gravity-state">OFF (1.00 G)</span>
+            </div>
+          </button>
+
+          <button id="btn-m-constellations" class="m-tool-btn">
+            <div class="m-tool-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="6" cy="6" r="2"></circle>
+                <circle cx="18" cy="8" r="2"></circle>
+                <circle cx="14" cy="18" r="2"></circle>
+                <polyline points="6 6 18 8 14 18"></polyline>
+              </svg>
+            </div>
+            <div class="m-tool-info">
+              <span class="m-tool-name">CONSTELLATIONS</span>
+              <span class="m-tool-state">SYNAPSE MAP</span>
+            </div>
+          </button>
+
+          <button id="btn-m-audio" class="m-tool-btn">
+            <div class="m-tool-icon">
+              <svg id="m-icon-sound-off" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <line x1="23" y1="9" x2="17" y2="15"></line>
+                <line x1="17" y1="9" x2="23" y2="15"></line>
+              </svg>
+              <svg id="m-icon-sound-on" class="hidden" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+              </svg>
+            </div>
+            <div class="m-tool-info">
+              <span class="m-tool-name">COSMIC SYNTH</span>
+              <span class="m-tool-state" id="m-audio-state">MUTED</span>
+            </div>
+          </button>
+
+          <button id="btn-m-recenter" class="m-tool-btn">
+            <div class="m-tool-icon">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"></circle>
+                <path d="M12 2v4M12 18v4M2 12h4M18 12h4"></path>
+              </svg>
+            </div>
+            <div class="m-tool-info">
+              <span class="m-tool-name">RECENTER ORBIT</span>
+              <span class="m-tool-state">CORE [0, 0]</span>
+            </div>
+          </button>
+        </div>
+      </div>
     </div>
 
   </main>
@@ -455,10 +616,10 @@
             <span>INSTAGRAM</span>
             <span class="link-ext">↗</span>
           </a>
-          <button id="btn-open-resume-action" class="station-link-pill pill-primary">
+          <a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" id="btn-open-resume-action" class="station-link-pill pill-primary">
             <span>VIEW RESUME</span>
-            <span class="link-ext">↓</span>
-          </button>
+            <span class="link-ext">↗</span>
+          </a>
         </div>
       </div>
     </div>
@@ -481,9 +642,9 @@
               <a href="mailto:kumarvidit69@gmail.com" class="btn-briefing-action btn-highlight">
                 <span>GET IN TOUCH</span>
               </a>
-              <button id="btn-recruiter-resume" class="btn-briefing-action">
+              <a href="assets/resume.pdf" target="_blank" rel="noopener noreferrer" id="btn-recruiter-resume" class="btn-briefing-action">
                 <span>VIEW RESUME</span>
-              </button>
+              </a>
             </div>
             <button class="btn-close-modal" id="btn-close-recruiter" title="Close">✕</button>
           </div>
@@ -703,14 +864,14 @@
           <p class="sheet-desc">Vidit Kumar Singh — Computer Science & Software Engineering</p>
         </div>
         <div class="resume-header-actions">
-          <button id="btn-download-resume-file" class="btn-secondary-action">
+          <a id="btn-download-resume-file" href="assets/resume.pdf" download="Vidit_Kumar_Singh_Resume.pdf" target="_blank" rel="noopener noreferrer" class="btn-secondary-action">
             <span>DOWNLOAD PDF</span>
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
             </svg>
-          </button>
+          </a>
           <button class="btn-close-modal" id="btn-close-resume">✕</button>
         </div>
       </div>
@@ -719,78 +880,88 @@
         <div class="resume-paper">
           <header class="resume-doc-header">
             <h1 class="resume-doc-name">VIDIT KUMAR SINGH</h1>
-            <p class="resume-doc-tagline">Computer Science Undergraduate | Full-Stack & Applied AI Engineer</p>
+            <p class="resume-doc-tagline">Chandausi, Uttar Pradesh • +91-8393946206 • kumarvidit69@gmail.com</p>
             <div class="resume-doc-contact">
-              <span>vidit@universe.dev</span> •
-              <span>github.com</span> •
-              <span>linkedin.com</span> •
-              <span>leetcode.com</span>
+              <a href="https://linkedin.com/in/vidit-ks/" target="_blank" rel="noopener noreferrer">LinkedIn</a> •
+              <a href="https://github.com/vidit-ks/" target="_blank" rel="noopener noreferrer">GitHub</a> •
+              <a href="https://leetcode.com/u/vidit_03/" target="_blank" rel="noopener noreferrer">LeetCode</a>
             </div>
           </header>
+
+          <section class="resume-doc-section">
+            <h3 class="resume-section-heading">PROFESSIONAL SUMMARY</h3>
+            <p class="item-desc">Computer Science undergraduate with a strong foundation in software development, Data Structures and Algorithms, and Object-Oriented Programming. Proficient in Java, with hands-on experience building full-stack applications using React, Node.js, Express.js, and SQL-based databases. Also experienced in applying AI/ML and computer vision concepts through academic and personal projects.</p>
+          </section>
 
           <section class="resume-doc-section">
             <h3 class="resume-section-heading">EDUCATION</h3>
             <div class="resume-item">
               <div class="item-head">
-                <span class="item-title">Bachelor of Technology in Computer Science & Engineering</span>
-                <span class="item-date">2023 — Present</span>
+                <span class="item-title">Vellore Institute of Technology, Bhopal — B.Tech in Computer Science and Engineering</span>
+                <span class="item-date">2023 – 2027</span>
               </div>
-              <p class="item-desc">Relevant Coursework: Data Structures & Algorithms, Distributed Systems, Database Management Systems, Operating Systems, Machine Learning, Computer Networks.</p>
+              <p class="item-desc">CGPA: 9.09 • Bhopal, Madhya Pradesh</p>
             </div>
           </section>
 
           <section class="resume-doc-section">
             <h3 class="resume-section-heading">TECHNICAL SKILLS</h3>
-            <p class="resume-skill-line"><strong>Languages:</strong> Java, Python, TypeScript, JavaScript, SQL, C++</p>
-            <p class="resume-skill-line"><strong>Frameworks & Libraries:</strong> React, Next.js, Node.js, Express, FastAPI, PyTorch, TensorFlow, TailwindCSS</p>
-            <p class="resume-skill-line"><strong>Databases & Cloud:</strong> PostgreSQL, Supabase, Redis, Docker, AWS (EC2, S3), Git, CI/CD</p>
+            <p class="resume-skill-line"><strong>Languages:</strong> Java, Python, JavaScript, SQL</p>
+            <p class="resume-skill-line"><strong>Frontend:</strong> React.js, HTML, CSS</p>
+            <p class="resume-skill-line"><strong>Backend:</strong> Node.js, Express.js, Flask</p>
+            <p class="resume-skill-line"><strong>Databases:</strong> PostgreSQL, Supabase</p>
+            <p class="resume-skill-line"><strong>AI/ML:</strong> Machine Learning, Computer Vision, OpenCV, YOLOv8</p>
+            <p class="resume-skill-line"><strong>Tools/Deployment:</strong> Git, GitHub, Vercel, Render</p>
           </section>
 
           <section class="resume-doc-section">
-            <h3 class="resume-section-heading">PRIMARY ENGINEERING PROJECTS</h3>
+            <h3 class="resume-section-heading">PROJECTS</h3>
             
             <div class="resume-item">
               <div class="item-head">
-                <span class="item-title">RoleFlow — Candidate Pipeline Lifecycle Engine</span>
-                <span class="item-date">React, TypeScript, Node.js, Supabase</span>
+                <span class="item-title">MediCura | AI-Powered Healthcare Platform</span>
+                <span class="item-date">May 2026</span>
               </div>
+              <p class="item-desc" style="font-weight: 500; color: #4b5563; margin-bottom: 4px;">React, Node.js, Express.js, Supabase | Live</p>
               <ul class="item-bullets">
-                <li>Engineered high-concurrency recruitment stage-gate system with real-time scoring and collaborative evaluation.</li>
-                <li>Built event-driven webhook pipeline resulting in 3.4x faster candidate processing workflows.</li>
+                <li>Developed a full-stack healthcare platform with role-based dashboards and JWT authentication.</li>
+                <li>Integrated rule-based disease prediction, AI-powered EHR PDF analysis, and real-time video consultation using Agora RTC.</li>
+                <li>Built scalable REST APIs and deployed the project using Vercel, Render, and Supabase PostgreSQL.</li>
               </ul>
             </div>
 
             <div class="resume-item">
               <div class="item-head">
-                <span class="item-title">DeployHub — Autonomous CI/CD Container Delivery Platform</span>
-                <span class="item-date">Node.js, Docker, AWS, Express, Supabase</span>
+                <span class="item-title">Helmet Detection System</span>
+                <span class="item-date">April 2026</span>
               </div>
+              <p class="item-desc" style="font-weight: 500; color: #4b5563; margin-bottom: 4px;">YOLOv8, Python, Flask, OpenCV | GitHub</p>
               <ul class="item-bullets">
-                <li>Created zero-downtime blue/green proxy routing platform with instantaneous health rollbacks.</li>
-                <li>Automated GitHub webhook build pipelines with container sandbox isolation and live telemetry streaming.</li>
+                <li>Developed a helmet detection system using YOLOv8 and custom image datasets to identify helmet and no-helmet riders.</li>
+                <li>Built preprocessing, annotation conversion, and inference pipelines for real-time image-based object detection.</li>
+                <li>Created a Flask-based web interface with image upload, detection visualization, and downloadable results.</li>
               </ul>
             </div>
 
             <div class="resume-item">
               <div class="item-head">
-                <span class="item-title">InsightAI — Enterprise Multimodal Intelligence Engine</span>
-                <span class="item-date">Python, PyTorch, LLMs, FastAPI, Docker</span>
+                <span class="item-title">PayTodo | Subscription Todo App</span>
+                <span class="item-date">Sep 2026</span>
               </div>
+              <p class="item-desc" style="font-weight: 500; color: #4b5563; margin-bottom: 4px;">React, Node.js, Express, Razorpay | GitHub | Live</p>
               <ul class="item-bullets">
-                <li>Architected hybrid dense-sparse vector search engine achieving 18ms p95 retrieval latency across unstructured corporate archives.</li>
-                <li>Implemented autonomous multi-agent synthesis pipeline with verified citation attribution.</li>
+                <li>Built a full-stack subscription-based todo app with tiered plans and feature-based access control.</li>
+                <li>Integrated Razorpay payments with HMAC-SHA256 signature verification for secure subscription processing.</li>
+                <li>Implemented task limits, priorities, recurring tasks, analytics, and CSV export across plans.</li>
               </ul>
             </div>
+          </section>
 
-            <div class="resume-item">
-              <div class="item-head">
-                <span class="item-title">RouteWise — Dynamic Multi-Constraint Fleet Routing Optimizer</span>
-                <span class="item-date">Java, Python, SQL, Docker</span>
-              </div>
-              <ul class="item-bullets">
-                <li>Implemented hybrid A* and Genetic TSP/VRP algorithms solving complex multi-vehicle routes in under 45ms.</li>
-              </ul>
-            </div>
+          <section class="resume-doc-section">
+            <h3 class="resume-section-heading">CERTIFICATIONS & ACHIEVEMENTS</h3>
+            <p class="resume-skill-line"><strong>Artificial Intelligence:</strong> Smartbridge (Jun 2025)</p>
+            <p class="resume-skill-line"><strong>Applied Machine Learning in Python:</strong> Coursera (Dec 2024)</p>
+            <p class="resume-skill-line"><strong>Achievements:</strong> Semi-finalist in Smart India Hackathon (SIH'25) • Winner at TechAstra'23 (iOS Club VIT Bhopal) • Solved 250+ problems on LeetCode</p>
           </section>
         </div>
       </div>

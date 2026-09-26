@@ -247,19 +247,19 @@ export const UNIVERSE_DATA = {
   ],
 
   constellations: [
-    { id: "java", name: "Java", category: "Backend / Core", x: -160, y: -80, mobileX: -30, mobileY: 410, projects: ["routewise"] },
-    { id: "python", name: "Python", category: "AI / Data", x: -280, y: 60, mobileX: -35, mobileY: 225, projects: ["insightai", "routewise", "medicura", "modelforge", "saferoute-ai", "helmet-detection"] },
-    { id: "react", name: "React", category: "Frontend", x: 180, y: -90, mobileX: 0, mobileY: -110, projects: ["roleflow", "paytodo", "insightai", "deployhub", "medicura", "modelforge"] },
-    { id: "nodejs", name: "Node.js", category: "Backend", x: 0, y: -230, mobileX: 0, mobileY: -250, projects: ["roleflow", "paytodo", "deployhub"] },
-    { id: "express", name: "Express", category: "Backend", x: 0, y: -290, mobileX: -10, mobileY: -170, projects: ["roleflow", "paytodo", "deployhub"] },
-    { id: "sql", name: "SQL", category: "Database", x: -60, y: 180, mobileX: -55, mobileY: 75, projects: ["roleflow", "paytodo", "routewise", "medicura", "saferoute-ai"] },
-    { id: "supabase", name: "Supabase", category: "Database / BaaS", x: 220, y: -20, mobileX: 55, mobileY: -35, projects: ["roleflow", "paytodo", "deployhub"] },
-    { id: "tensorflow", name: "TensorFlow", category: "AI / ML", x: -220, y: 240, mobileX: 15, mobileY: 335, projects: ["medicura", "modelforge", "saferoute-ai"] },
-    { id: "pytorch", name: "PyTorch", category: "AI / ML", x: -360, y: 200, mobileX: -40, mobileY: 275, projects: ["insightai", "modelforge", "helmet-detection"] },
-    { id: "llms", name: "LLMs", category: "AI / Applied", x: -320, y: -20, mobileX: -45, mobileY: 115, projects: ["insightai"] },
-    { id: "docker", name: "Docker", category: "Cloud / DevOps", x: 60, y: 220, mobileX: 30, mobileY: 170, projects: ["insightai", "routewise", "deployhub", "medicura", "modelforge", "helmet-detection"] },
-    { id: "aws", name: "AWS", category: "Cloud / Infra", x: 140, y: 300, mobileX: -10, mobileY: -320, projects: ["deployhub"] },
-    { id: "git", name: "Git", category: "Tooling", x: 0, y: -110, mobileX: 0, mobileY: -60, projects: ["roleflow", "paytodo", "insightai", "routewise", "deployhub", "medicura", "modelforge", "saferoute-ai", "helmet-detection"] }
+    { id: "java", name: "Java", category: "Backend / Core", x: -160, y: -80, mobileX: -25, mobileY: 425, projects: ["routewise"] },
+    { id: "python", name: "Python", category: "AI / Data", x: -280, y: 60, mobileX: -30, mobileY: 235, projects: ["insightai", "routewise", "medicura", "modelforge", "saferoute-ai", "helmet-detection"] },
+    { id: "react", name: "React", category: "Frontend", x: 180, y: -90, mobileX: -25, mobileY: -125, projects: ["roleflow", "paytodo", "insightai", "deployhub", "medicura", "modelforge"] },
+    { id: "nodejs", name: "Node.js", category: "Backend", x: 0, y: -230, mobileX: -20, mobileY: -275, projects: ["roleflow", "paytodo", "deployhub"] },
+    { id: "express", name: "Express", category: "Backend", x: 0, y: -290, mobileX: 25, mobileY: -215, projects: ["roleflow", "paytodo", "deployhub"] },
+    { id: "sql", name: "SQL", category: "Database", x: -60, y: 180, mobileX: -65, mobileY: 70, projects: ["roleflow", "paytodo", "routewise", "medicura", "saferoute-ai"] },
+    { id: "supabase", name: "Supabase", category: "Database / BaaS", x: 220, y: -20, mobileX: 65, mobileY: -25, projects: ["roleflow", "paytodo", "deployhub"] },
+    { id: "tensorflow", name: "TensorFlow", category: "AI / ML", x: -220, y: 240, mobileX: 25, mobileY: 340, projects: ["medicura", "modelforge", "saferoute-ai"] },
+    { id: "pytorch", name: "PyTorch", category: "AI / ML", x: -360, y: 200, mobileX: -60, mobileY: 290, projects: ["insightai", "modelforge", "helmet-detection"] },
+    { id: "llms", name: "LLMs", category: "AI / Applied", x: -320, y: -20, mobileX: -20, mobileY: 110, projects: ["insightai"] },
+    { id: "docker", name: "Docker", category: "Cloud / DevOps", x: 60, y: 220, mobileX: 45, mobileY: 165, projects: ["insightai", "routewise", "deployhub", "medicura", "modelforge", "helmet-detection"] },
+    { id: "aws", name: "AWS", category: "Cloud / Infra", x: 140, y: 300, mobileX: 10, mobileY: -360, projects: ["deployhub"] },
+    { id: "git", name: "Git", category: "Tooling", x: 0, y: -110, mobileX: 20, mobileY: -65, projects: ["roleflow", "paytodo", "insightai", "routewise", "deployhub", "medicura", "modelforge", "saferoute-ai", "helmet-detection"] }
   ],
 
   categories: [

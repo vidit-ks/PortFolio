@@ -890,6 +890,38 @@ html, body {
   transform: scale(1.4);
 }
 
+.exp-label {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.exp-label .node-badge {
+  font-family: var(--font-mono);
+  font-size: 0.56rem;
+  letter-spacing: 0.16em;
+  color: var(--star-color, var(--accent-cyan));
+  margin-bottom: 0.15rem;
+  text-transform: uppercase;
+}
+
+.exp-label .node-name {
+  font-family: var(--font-heading);
+  font-size: 0.82rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(0, 0, 0, 0.9);
+}
+
 /* ==========================================================================
    CONSTELLATION NODES LAYER (TECHNOLOGY GRAPH)
    ========================================================================== */

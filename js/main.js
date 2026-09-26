@@ -406,6 +406,9 @@ class UniverseEngine {
         <div class="planet-body">
           ${this.getPlanetVisualContent(data.id)}
         </div>
+        <div class="planet-name-label">
+          <span class="planet-name-text">${data.name}</span>
+        </div>
         <div class="planet-hud-card">
           <span class="planet-hud-category">${data.category}</span>
           <span class="planet-hud-name">${data.name}</span>
@@ -490,9 +493,8 @@ class UniverseEngine {
 
       el.innerHTML = `
         ${this.getExperimentalVisualContent(data.id)}
-        <div class="exp-label">
-          <span class="node-badge">${data.badge || 'DEEP SPACE LAB'}</span>
-          <span class="node-name">${data.name}</span>
+        <div class="planet-name-label">
+          <span class="planet-name-text">${data.name}</span>
         </div>
         <div class="planet-hud-card">
           <span class="planet-hud-category">${data.category}</span>

@@ -188,8 +188,8 @@ class UniverseEngine {
     // Sync Experimental sector boundary tag
     const expTag = document.querySelector('.sector-boundary-tag');
     if (expTag) {
-      expTag.style.setProperty('--x', isMob ? '0px' : '520px');
-      expTag.style.setProperty('--y', isMob ? '430px' : '-300px');
+      expTag.style.setProperty('--x', isMob ? '20px' : '520px');
+      expTag.style.setProperty('--y', isMob ? '410px' : '-300px');
     }
   }
 
@@ -469,8 +469,8 @@ class UniverseEngine {
 
   mountExperimental() {
     const isMob = this.isMobile();
-    const tagX = isMob ? '0px' : '520px';
-    const tagY = isMob ? '430px' : '-300px';
+    const tagX = isMob ? '20px' : '520px';
+    const tagY = isMob ? '410px' : '-300px';
 
     this.experimentalContainer.innerHTML = `
       <div class="sector-boundary-tag" style="--x: ${tagX}; --y: ${tagY};">

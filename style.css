@@ -891,12 +891,12 @@ html, body {
 }
 
 .planet-name-label {
+  display: none;
   position: absolute;
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
   margin-top: 0.45rem;
-  display: flex;
   align-items: center;
   justify-content: center;
   white-space: nowrap;
@@ -3868,6 +3868,10 @@ html, body {
   /* Planets HUD hover card disabled on touch screens to avoid clipping */
   .planet-hud-card {
     display: none !important;
+  }
+
+  .planet-name-label {
+    display: flex !important;
   }
 
   /* Planet Elements Touch Scale & Padding */

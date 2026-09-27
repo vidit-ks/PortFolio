@@ -247,7 +247,7 @@ export const UNIVERSE_DATA = {
   ],
 
   constellations: [
-    { id: "java", name: "Java", category: "Backend / Core", x: -160, y: -80, mobileX: -25, mobileY: 425, projects: ["routewise"] },
+    { id: "java", name: "Java", category: "Backend / Core", x: -160, y: -80, mobileX: -70, mobileY: 435, projects: ["routewise"] },
     { id: "python", name: "Python", category: "AI / Data", x: -280, y: 60, mobileX: -30, mobileY: 235, projects: ["insightai", "routewise", "medicura", "modelforge", "saferoute-ai", "helmet-detection"] },
     { id: "react", name: "React", category: "Frontend", x: 180, y: -90, mobileX: -25, mobileY: -125, projects: ["roleflow", "paytodo", "insightai", "deployhub", "medicura", "modelforge"] },
     { id: "nodejs", name: "Node.js", category: "Backend", x: 0, y: -230, mobileX: -20, mobileY: -275, projects: ["roleflow", "paytodo", "deployhub"] },

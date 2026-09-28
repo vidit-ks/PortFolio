@@ -17,9 +17,17 @@
 </head>
 <body class="universe-body">
 
-  <!-- CUSTOM CURSOR -->
-  <div id="cursor-dot" class="cursor-dot"></div>
-  <div id="cursor-ring" class="cursor-ring"></div>
+  <!-- CUSTOM SHOOTING STAR CURSOR & TRAIL -->
+  <canvas id="star-trail-canvas" class="star-trail-canvas"></canvas>
+  <div id="star-cursor" class="star-cursor">
+    <div class="star-halo"></div>
+    <svg class="star-svg" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- 4-point celestial diamond star with soft curves -->
+      <path class="star-spikes" d="M12 2 C12 8.2 8.2 12 2 12 C8.2 12 12 15.8 12 22 C12 15.8 15.8 12 22 12 C15.8 12 12 8.2 12 2 Z" fill="#ffffff" />
+      <circle class="star-core" cx="12" cy="12" r="2.2" fill="#ffffff" />
+    </svg>
+    <div class="star-click-burst"></div>
+  </div>
 
   <!-- LANDING EXPERIENCE -->
   <section id="landing-stage" class="landing-stage">
@@ -594,7 +602,7 @@
           </div>
           <div class="stat-card">
             <span class="stat-label">CURRENT STATUS</span>
-            <span class="stat-val stat-nominal">● READY FOR DEPLOYMENT</span>
+            <span class="stat-val stat-nominal">● MAKING IDEAS EXECUTABLE</span>
           </div>
         </div>
 

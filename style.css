@@ -60,55 +60,138 @@ html, body {
   -webkit-user-select: none;
 }
 
-/* Custom Cursor */
+/* ==========================================================================
+   TINY GLOWING SHOOTING STAR CURSOR & TRAIL
+   ========================================================================== */
 @media (pointer: fine) {
   body {
     cursor: none;
   }
+  
+  a, button, [role="button"], .planet-item, .experimental-item, .constellation-node, .dock-btn, .filter-pill, .station-link-pill, .btn-briefing-action, .tech-grid-pill {
+    cursor: none !important;
+  }
 }
 
-.cursor-dot {
+.star-trail-canvas {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99997;
+}
+
+.star-cursor {
   position: fixed;
   top: 0;
   left: 0;
-  width: 6px;
-  height: 6px;
-  background: #ffffff;
-  border-radius: 50%;
+  width: 20px;
+  height: 20px;
   pointer-events: none;
   z-index: 99999;
   will-change: transform;
-  box-shadow: 0 0 12px rgba(255, 255, 255, 0.95);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: translate3d(-100px, -100px, 0) translate(-50%, -50%);
 }
 
-.cursor-ring {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 40px;
-  height: 40px;
-  border: 1.5px solid rgba(255, 255, 255, 0.4);
+.star-halo {
+  position: absolute;
+  width: 24px;
+  height: 24px;
   border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.75) 0%, rgba(56, 189, 248, 0.4) 38%, rgba(168, 85, 247, 0.15) 65%, transparent 80%);
+  filter: blur(2px);
   pointer-events: none;
-  z-index: 99998;
-  will-change: transform, width, height;
-  transition: width 0.22s var(--ease-cinematic), 
-              height 0.22s var(--ease-cinematic), 
-              border-color 0.22s,
-              background-color 0.22s;
+  transition: transform 0.25s var(--ease-cinematic), opacity 0.25s;
 }
 
-.cursor-ring.cursor-hover {
-  width: 58px;
-  height: 58px;
-  border-color: rgba(168, 85, 247, 0.85);
-  background: rgba(168, 85, 247, 0.08);
-  box-shadow: 0 0 25px rgba(168, 85, 247, 0.35);
+.star-svg {
+  width: 12px;
+  height: 12px;
+  display: block;
+  filter: drop-shadow(0 0 3px #ffffff) drop-shadow(0 0 6px rgba(56, 189, 248, 0.85));
+  transition: transform 0.2s var(--ease-cinematic), filter 0.2s;
 }
 
-.cursor-ring.cursor-grav-active {
-  border-color: rgba(6, 182, 212, 0.85);
-  box-shadow: 0 0 30px rgba(6, 182, 212, 0.45);
+.star-spikes {
+  fill: #ffffff;
+}
+
+.star-core {
+  fill: #ffffff;
+}
+
+/* Interactive & Planet Hover States */
+.star-cursor.star-hover .star-svg {
+  transform: scale(1.35);
+  filter: drop-shadow(0 0 5px #ffffff) drop-shadow(0 0 10px rgba(168, 85, 247, 0.95));
+}
+
+.star-cursor.star-hover .star-halo {
+  transform: scale(1.5);
+  opacity: 0.95;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.85) 0%, rgba(168, 85, 247, 0.5) 45%, rgba(56, 189, 248, 0.2) 70%, transparent 85%);
+}
+
+.star-cursor.star-grav-active .star-svg {
+  transform: scale(1.4);
+  filter: drop-shadow(0 0 6px #ffffff) drop-shadow(0 0 12px rgba(6, 182, 212, 1));
+}
+
+.star-cursor.star-grav-active .star-halo {
+  transform: scale(1.65);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0%, rgba(6, 182, 212, 0.6) 45%, rgba(168, 85, 247, 0.25) 70%, transparent 85%);
+}
+
+/* Click Starburst Ripple */
+.star-click-burst {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.95) 0%, rgba(56, 189, 248, 0.6) 45%, transparent 75%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.star-cursor.star-bursting .star-click-burst {
+  animation: star-burst-anim 0.25s ease-out forwards;
+}
+
+@keyframes star-burst-anim {
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.6);
+    opacity: 0;
+  }
+}
+
+/* Touch & Mobile Cursor Disabling */
+@media (hover: none), (max-width: 768px) {
+  #star-cursor,
+  #star-trail-canvas {
+    display: none !important;
+  }
+  
+  body, a, button, [role="button"], .planet-item, .experimental-item, .constellation-node, .dock-btn {
+    cursor: auto !important;
+  }
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  #star-trail-canvas {
+    display: none !important;
+  }
 }
 
 /* ==========================================================================

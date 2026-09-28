@@ -61,10 +61,20 @@ class UniverseEngine {
     this.experimental = [];
     this.constellations = [];
 
-    // Custom Cursor Elements
-    this.cursorDot = document.getElementById('cursor-dot');
-    this.cursorRing = document.getElementById('cursor-ring');
-    this.cursorRingPos = { x: this.width / 2, y: this.height / 2 };
+    // Custom Shooting Star Cursor & Luminous Trail
+    this.starCursor = document.getElementById('star-cursor');
+    this.starTrailCanvas = document.getElementById('star-trail-canvas');
+    this.starTrailCtx = this.starTrailCanvas ? this.starTrailCanvas.getContext('2d') : null;
+    this.star = {
+      x: this.width / 2,
+      y: this.height / 2,
+      vx: 0,
+      vy: 0,
+      speed: 0,
+      isHovering: false
+    };
+    this.starTrail = [];
+    this.starSparks = [];
 
     this.init();
   }
@@ -110,6 +120,90 @@ class UniverseEngine {
     }
   }
 
+  setCursorHover(isHover, targetEl = null) {
+    if (this.isMobile()) return;
+    this.star.isHovering = isHover;
+    if (this.starCursor) {
+      this.starCursor.classList.toggle('star-hover', isHover);
+    }
+  }
+
+  setCursorGrav(isActive) {
+    if (this.isMobile()) return;
+    if (this.starCursor) {
+      this.starCursor.classList.toggle('star-grav-active', isActive);
+    }
+  }
+
+  triggerCursorBurst() {
+    if (this.isMobile() || !this.starCursor) return;
+    this.starCursor.classList.remove('star-bursting');
+    void this.starCursor.offsetWidth;
+    this.starCursor.classList.add('star-bursting');
+  }
+
+  renderShootingStarTrail() {
+    if (!this.starTrailCtx || this.isMobile()) return;
+    this.starTrailCtx.clearRect(0, 0, this.width, this.height);
+
+    // Render Trail Ribbon
+    if (this.starTrail.length > 1) {
+      for (let i = 1; i < this.starTrail.length; i++) {
+        const p0 = this.starTrail[i - 1];
+        const p1 = this.starTrail[i];
+        const progress = i / this.starTrail.length; // 0 at tail, 1 at star head
+
+        const strokeAlpha = p1.alpha * progress * (this.traceMode ? 0.95 : 0.75);
+        if (strokeAlpha > 0.01) {
+          // Inner core white streak
+          this.starTrailCtx.beginPath();
+          this.starTrailCtx.moveTo(p0.x, p0.y);
+          this.starTrailCtx.lineTo(p1.x, p1.y);
+          this.starTrailCtx.strokeStyle = `rgba(255, 255, 255, ${strokeAlpha * 0.9})`;
+          this.starTrailCtx.lineWidth = Math.max(p1.width * progress, 0.4);
+          this.starTrailCtx.lineCap = 'round';
+          this.starTrailCtx.stroke();
+
+          // Soft ambient cyan/purple glow streak
+          this.starTrailCtx.beginPath();
+          this.starTrailCtx.moveTo(p0.x, p0.y);
+          this.starTrailCtx.lineTo(p1.x, p1.y);
+          this.starTrailCtx.strokeStyle = progress > 0.5 ? `rgba(56, 189, 248, ${strokeAlpha * 0.5})` : `rgba(168, 85, 247, ${strokeAlpha * 0.35})`;
+          this.starTrailCtx.lineWidth = Math.max(p1.width * progress * 2.2, 1.2);
+          this.starTrailCtx.stroke();
+        }
+      }
+    }
+
+    // Decay trail alpha
+    for (let i = this.starTrail.length - 1; i >= 0; i--) {
+      this.starTrail[i].alpha -= 0.085;
+      if (this.starTrail[i].alpha <= 0) {
+        this.starTrail.splice(i, 1);
+      }
+    }
+
+    // Update & Render Stardust Sparks
+    for (let i = this.starSparks.length - 1; i >= 0; i--) {
+      const sp = this.starSparks[i];
+      sp.x += sp.vx;
+      sp.y += sp.vy;
+      sp.alpha -= 0.06;
+      sp.size *= 0.94;
+
+      if (sp.alpha <= 0 || sp.size <= 0.3) {
+        this.starSparks.splice(i, 1);
+      } else {
+        this.starTrailCtx.fillStyle = sp.color;
+        this.starTrailCtx.globalAlpha = sp.alpha;
+        this.starTrailCtx.beginPath();
+        this.starTrailCtx.arc(sp.x, sp.y, sp.size, 0, Math.PI * 2);
+        this.starTrailCtx.fill();
+      }
+    }
+    this.starTrailCtx.globalAlpha = 1.0;
+  }
+
   init() {
     this.handleResize();
     window.addEventListener('resize', () => this.handleResize());
@@ -132,6 +226,12 @@ class UniverseEngine {
     this.canvas.width = this.width * window.devicePixelRatio;
     this.canvas.height = this.height * window.devicePixelRatio;
     this.ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+
+    if (this.starTrailCanvas && this.starTrailCtx) {
+      this.starTrailCanvas.width = this.width * window.devicePixelRatio;
+      this.starTrailCanvas.height = this.height * window.devicePixelRatio;
+      this.starTrailCtx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    }
 
     if (this.landingCanvas && this.landingCtx) {
       this.landingCanvas.width = this.width * window.devicePixelRatio;
@@ -423,7 +523,7 @@ class UniverseEngine {
       el.addEventListener('mouseenter', () => {
         if (this.isMobile()) return;
         sound.playHover();
-        if (this.cursorRing) this.cursorRing.classList.add('cursor-hover');
+        this.setCursorHover(true, el);
         this.setStatus(`TARGET : ${data.name.toUpperCase()}`);
 
         if (this.traceMode) {
@@ -433,7 +533,7 @@ class UniverseEngine {
 
       el.addEventListener('mouseleave', () => {
         if (this.isMobile()) return;
-        if (this.cursorRing) this.cursorRing.classList.remove('cursor-hover');
+        this.setCursorHover(false);
         this.resetStatus();
 
         if (this.traceMode && !this.activeTech) {
@@ -507,7 +607,7 @@ class UniverseEngine {
       el.addEventListener('mouseenter', () => {
         if (this.isMobile()) return;
         sound.playHover();
-        if (this.cursorRing) this.cursorRing.classList.add('cursor-hover');
+        this.setCursorHover(true, el);
         this.setStatus(`TARGET : ${data.name.toUpperCase()}`);
 
         if (this.traceMode) {
@@ -517,7 +617,7 @@ class UniverseEngine {
 
       el.addEventListener('mouseleave', () => {
         if (this.isMobile()) return;
-        if (this.cursorRing) this.cursorRing.classList.remove('cursor-hover');
+        this.setCursorHover(false);
         this.resetStatus();
 
         if (this.traceMode && !this.activeTech) {
@@ -821,10 +921,6 @@ class UniverseEngine {
       this.mouse.x = e.clientX;
       this.mouse.y = e.clientY;
 
-      if (this.cursorDot) {
-        this.cursorDot.style.transform = `translate3d(calc(${e.clientX}px - 50%), calc(${e.clientY}px - 50%), 0)`;
-      }
-
       if (!this.isEntered && this.landingAurora) {
         this.landingAurora.style.transform = `translate(${e.clientX}px, ${e.clientY}px)`;
       }
@@ -848,12 +944,30 @@ class UniverseEngine {
       }
     });
 
-    // Drag to Pan Space (Desktop)
+    // Spacecraft Propulsion Burst on Click
     window.addEventListener('mousedown', (e) => {
+      this.triggerCursorBurst();
       if (e.target.closest('.dock-hud, .top-hud, .universe-overlay, .spectrum-filter-bar, .mobile-planet-sheet, .mobile-systems-sheet, .mobile-trace-guide')) return;
       this.mouse.isDown = true;
       this.mouse.dragStartX = e.clientX - this.camera.x;
       this.mouse.dragStartY = e.clientY - this.camera.y;
+    });
+
+    // Interactive element hover targeting for buttons, links, controls
+    document.addEventListener('mouseover', (e) => {
+      if (this.isMobile()) return;
+      const interactive = e.target.closest('button, a, .dock-btn, .btn-primary-glow, .filter-pill, .tech-grid-pill, .btn-briefing-action, .recruiter-action-links a, .interactive-el');
+      if (interactive && !interactive.closest('.planet-item, .experimental-item')) {
+        this.setCursorHover(true, interactive);
+      }
+    });
+
+    document.addEventListener('mouseout', (e) => {
+      if (this.isMobile()) return;
+      const interactive = e.target.closest('button, a, .dock-btn, .btn-primary-glow, .filter-pill, .tech-grid-pill, .btn-briefing-action, .recruiter-action-links a, .interactive-el');
+      if (interactive && !interactive.closest('.planet-item, .experimental-item')) {
+        this.setCursorHover(false);
+      }
     });
 
     window.addEventListener('mousemove', (e) => {
@@ -938,7 +1052,7 @@ class UniverseEngine {
           if (this.mobileTraceGuide && this.isMobile()) {
             this.mobileTraceGuide.classList.remove('hidden');
           }
-          if (this.cursorRing) this.cursorRing.classList.add('cursor-hover');
+          this.setCursorHover(true);
         } else {
           btnTrace.classList.remove('active');
           if (traceStatus) {
@@ -950,7 +1064,7 @@ class UniverseEngine {
           if (this.mobileTraceGuide) {
             this.mobileTraceGuide.classList.add('hidden');
           }
-          if (this.cursorRing) this.cursorRing.classList.remove('cursor-hover');
+          this.setCursorHover(false);
         }
       });
     }
@@ -969,7 +1083,7 @@ class UniverseEngine {
           gravityStatus.className = 'status-on';
         }
         if (teleGrav) teleGrav.textContent = '2.40 G';
-        if (this.cursorRing) this.cursorRing.classList.add('cursor-grav-active');
+        this.setCursorGrav(true);
       } else {
         btnGravity?.classList.remove('active');
         if (gravityStatus) {
@@ -977,7 +1091,7 @@ class UniverseEngine {
           gravityStatus.className = 'status-off';
         }
         if (teleGrav) teleGrav.textContent = '1.00 G';
-        if (this.cursorRing) this.cursorRing.classList.remove('cursor-grav-active');
+        this.setCursorGrav(false);
         [...this.planets, ...this.experimental].forEach(b => {
           b.vx = 0;
           b.vy = 0;
@@ -1088,10 +1202,12 @@ class UniverseEngine {
       station.addEventListener('mouseenter', () => {
         if (this.isMobile()) return;
         sound.playHover();
+        this.setCursorHover(true, station);
         this.setStatus('TARGET : MISSION CONTROL');
       });
       station.addEventListener('mouseleave', () => {
         if (this.isMobile()) return;
+        this.setCursorHover(false);
         this.resetStatus();
       });
       station.addEventListener('click', (e) => {
@@ -1108,10 +1224,12 @@ class UniverseEngine {
       satellite.addEventListener('mouseenter', () => {
         if (this.isMobile()) return;
         sound.playHover();
+        this.setCursorHover(true, satellite);
         this.setStatus('TARGET : COMMUNICATION SATELLITE');
       });
       satellite.addEventListener('mouseleave', () => {
         if (this.isMobile()) return;
+        this.setCursorHover(false);
         this.resetStatus();
       });
       satellite.addEventListener('click', (e) => {
@@ -1655,11 +1773,52 @@ class UniverseEngine {
   }
 
   updatePhysics() {
-    // Smooth Lerp for Cursor Ring (Desktop pointer only)
-    if (this.cursorRing && !this.isMobile()) {
-      this.cursorRingPos.x += (this.mouse.x - this.cursorRingPos.x) * 0.28;
-      this.cursorRingPos.y += (this.mouse.y - this.cursorRingPos.y) * 0.28;
-      this.cursorRing.style.transform = `translate3d(calc(${this.cursorRingPos.x}px - 50%), calc(${this.cursorRingPos.y}px - 50%), 0)`;
+    // Custom Shooting Star Physics & Luminous Motion (Desktop pointer only)
+    if (this.starCursor && !this.isMobile()) {
+      const dx = this.mouse.x - this.star.x;
+      const dy = this.mouse.y - this.star.y;
+      const dist = Math.hypot(dx, dy);
+
+      // Smooth, responsive inertia following
+      if (dist > 0.05) {
+        this.star.vx = (this.star.vx * 0.58) + (dx * 0.32);
+        this.star.vy = (this.star.vy * 0.58) + (dy * 0.32);
+        this.star.x += this.star.vx;
+        this.star.y += this.star.vy;
+      } else {
+        this.star.vx = 0;
+        this.star.vy = 0;
+        this.star.x = this.mouse.x;
+        this.star.y = this.mouse.y;
+      }
+      this.star.speed = Math.hypot(this.star.vx, this.star.vy);
+
+      // Position the glowing star directly at (x, y)
+      this.starCursor.style.transform = `translate3d(${this.star.x}px, ${this.star.y}px, 0) translate(-50%, -50%)`;
+
+      // Append point to shooting star trail when in motion
+      if (this.star.speed > 0.6) {
+        this.starTrail.push({
+          x: this.star.x,
+          y: this.star.y,
+          speed: this.star.speed,
+          alpha: 1.0,
+          width: Math.min(Math.max(this.star.speed * 0.45, 1.4), 3.2)
+        });
+
+        // Occasionally shed a sparkling dust mote when flying fast
+        if (this.star.speed > 3.0 && Math.random() < 0.45) {
+          this.starSparks.push({
+            x: this.star.x + (Math.random() - 0.5) * 4,
+            y: this.star.y + (Math.random() - 0.5) * 4,
+            vx: -this.star.vx * 0.12 + (Math.random() - 0.5) * 0.6,
+            vy: -this.star.vy * 0.12 + (Math.random() - 0.5) * 0.6,
+            size: Math.random() * 1.5 + 0.6,
+            alpha: 0.9,
+            color: Math.random() > 0.4 ? '#ffffff' : (Math.random() > 0.5 ? '#38bdf8' : '#c084fc')
+          });
+        }
+      }
     }
 
     // Camera Smooth Lerp with Boundary Clamping
@@ -1830,6 +1989,7 @@ class UniverseEngine {
         this.renderLandingCanvas();
       }
       this.renderCanvas();
+      this.renderShootingStarTrail();
       requestAnimationFrame(loop);
     };
     requestAnimationFrame(loop);
